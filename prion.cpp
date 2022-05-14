@@ -4,7 +4,7 @@
 #include "max.h"
 
 // #define debug 1
-extern uint8_t dev ;
+extern uint8_t dev;
 
 extern uint8_t process_status;
 extern uint32_t cuurent_time;
@@ -17,11 +17,12 @@ extern float tmp4;
 extern float tmp2;
 extern float tmp3;
 
-// void cycle::unwrapped_cycle()
+// bnd cycle
 
 void prion_cycle(void)
 {
 
+    uint8_t count = 0;
     if (process_status == 1)
     {
 
@@ -35,9 +36,24 @@ void prion_cycle(void)
         // float chamber_pressure;
 
         last_time = millis();
-        // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 400000) // 400000
+        // clock_running = millis() - cuurent_time;   6:40 sec
+        while ((millis() - cuurent_time) < 400000) // 6:40
         {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 72, dev, false); // 72 h
+                    set_char(2, 69, dev, false); // 69 e
+                    // set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             PORTA |= _BV(start_led);
             PORTK &= ~_BV(vacuum_led);
@@ -62,9 +78,6 @@ void prion_cycle(void)
             Serial1.print("pressure : ");
             Serial1.print(pres);
             Serial1.println(" kPa");
-      
-
-
 
             tmp4 = TS1();
             Serial1.print("Outer Body :");
@@ -163,20 +176,18 @@ void prion_cycle(void)
             {
                 PORTC |= _BV(heat);
             }
-        
-          
-        if (RS == 0)
-        {
-            process_status = 9;
-            Serial1.println("Process Stoped");
-        }
 
-          }
+            if (RS == 0)
+            {
+                process_status = 13;
+                Serial1.println("Process Stoped");
+            }
+        }
         process_status = 2;
     }
     /* ##################################### 1st vaccume #########################################################*/
     /* ##################################### UA1 #########################################################*/
-    /********  V4 + VACCUME PUMP + STRAT FROM 3:40 + END AT -80 KPA **********/
+    /********  V4 + VACCUME PUMP + STRAT FROM 2:40 + END AT -80 KPA **********/
     if (process_status == 2)
     {
         PORTJ &= ~_BV(v3); // 4th valve
@@ -200,8 +211,25 @@ void prion_cycle(void)
 
         // // float chamber_pressure;
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 220000) // 220000 :: 3:40
+        while ((millis() - cuurent_time) < 157000) // 2:40
         {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(1, 85, dev, false); // 85 u
+                    set_char(2, 65, dev, false); // 65 a
+                    set_char(3, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
             PORTA &= ~_BV(start_led);
             PORTK |= _BV(vacuum_led);
             PORTK &= ~_BV(serilize_led);
@@ -306,7 +334,7 @@ void prion_cycle(void)
         PORTJ &= ~_BV(v4);
         if (RS == 0)
         {
-            process_status = 9;
+            process_status = 13;
             Serial1.println("Process Stoped");
         }
 
@@ -316,7 +344,7 @@ void prion_cycle(void)
     /* Raise pressure */
     /* ##################################### PR1 #########################################################*/
     /* ##################################### PR1 #########################################################*/
-    /********  V1 + MOTOR + V3 + STEAM +  STRAT FROM 00:00 + END AT 150 KPA **********/
+    /********  V1 + MOTOR + V3 + STEAM +  STRAT FROM 00:00 + END AT 150 KPA (3:30)**********/
 
     if (process_status == 3)
     {
@@ -330,8 +358,24 @@ void prion_cycle(void)
         cuurent_time = millis();
         //        // float chamber_pressure;
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 445000) // 445000 // 7:25
+        while ((millis() - cuurent_time) < 348000) // 4:30
         {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 80, dev, false); // 80 P
+                    set_char(2, 82, dev, false); // 62 R
+                    set_char(1, 2, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -389,7 +433,7 @@ void prion_cycle(void)
                 PORTC |= _BV(heat);
             }
 
-            if (pres > 150)
+            if (pres > 90)
             {
                 PORTJ &= ~_BV(v3);
                 PORTJ &= ~_BV(v1);    // 1ST
@@ -450,7 +494,7 @@ void prion_cycle(void)
 
         if (RS == 0)
         {
-            process_status = 9;
+            process_status = 13;
             Serial1.println("Process Stoped");
         }
         process_status = 4;
@@ -459,7 +503,7 @@ void prion_cycle(void)
     /* Exaust */
     /* ##################################### RE1 #########################################################*/
     /* ##################################### RE1 #########################################################*/
-    /********  V2 +  STRAT FROM 00:00 + END AT 45 SEC **********/
+    /********  V2 +  STRAT FROM 00:00 + END AT 40 SEC **********/
 
     if (process_status == 4)
     {
@@ -474,8 +518,24 @@ void prion_cycle(void)
         // chamber_pressure = get_sensor_data(); // print Data
         cuurent_time = millis();
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 45000) // 45sec  45000
+        while ((millis() - cuurent_time) < 40000) // 40 sec
         {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(2, 80, dev, false); // 69 e
+                    set_char(3, 82, dev, false); // 62 R
+                    set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -556,10 +616,167 @@ void prion_cycle(void)
 
         if (RS == 0)
         {
-            process_status = 9;
+            process_status = 13;
             Serial1.println("Process Stoped");
         }
         process_status = 5;
+    }
+
+    /* ##################################### 2nd vaccume #########################################################*/
+    /* ##################################### UA2 #########################################################*/
+    /********  V4 + VACCUME PUMP + STRAT FROM 2:40 + END AT -80 KPA **********/
+    if (process_status == 5)
+    {
+
+        PORTJ &= ~_BV(v3); // 4th valve
+        PORTJ &= ~_BV(v4); // 4th valve
+
+        cuurent_time = millis();
+        /* AC compnents status */
+        PORTC &= ~_BV(heat);
+        PORTC &= ~_BV(steam);
+
+        /* LED  status */
+        PORTA &= ~_BV(start_led);
+        PORTK |= _BV(vacuum_led);
+        PORTK &= ~_BV(serilize_led);
+        PORTK &= ~_BV(dry_led);
+        PORTK &= ~_BV(end_led);
+
+        /*  buzzer */
+
+        uint32_t ct = 0;
+
+        // // float chamber_pressure;
+        // clock_running = millis() - cuurent_time;
+        while ((millis() - cuurent_time) < 140000) // 2:20
+        {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(1, 85, dev, false); // 85 u
+                    set_char(2, 65, dev, false); // 65 a
+                    set_char(3, 2, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
+            PORTA &= ~_BV(start_led);
+            PORTK |= _BV(vacuum_led);
+            PORTK &= ~_BV(serilize_led);
+            PORTK &= ~_BV(dry_led);
+            PORTK &= ~_BV(end_led);
+            Serial1.print("current process running :");
+            Serial1.print(process_status);
+            Serial1.println("...UA1...");
+
+            if (!(PINL & (1 << 5)))
+            {
+                RS = 0;
+                delay(300);
+                break;
+            }
+            /* Get pressure and Temperature */
+            // chamber_pressure = get_sensor_data(); // print Data
+
+            pres = mpx();
+            // lcd2_press(pres);
+            Serial1.print("pressure : ");
+            Serial1.print(pres);
+            Serial1.println(" kPa");
+
+            tmp4 = TS1();
+            Serial1.print("Outer Body :");
+            Serial1.println(tmp4);
+
+            tmp2 = TS2();
+            Serial1.print("Chamber : ");
+            Serial1.println(tmp2);
+
+            tmp3 = TS3();
+            Serial1.print("Steam Generator : ");
+            Serial1.println(tmp3);
+
+            /********** BREAK CONDITION ***************/
+            if (pres < -65)
+            {
+                PORTH &= ~_BV(vac);
+                PORTJ &= ~_BV(v4);
+                process_status = 3;
+                break;
+            }
+
+            /* Steam Generatoe */
+            if (tmp3 >= 200)
+            {
+
+                PORTC &= ~_BV(steam);
+            }
+            else
+            {
+                PORTC |= _BV(steam);
+            }
+
+            /* Heat Ring */
+            if (tmp3 >= 120)
+            {
+
+                PORTC &= ~_BV(heat);
+            }
+            else
+            {
+                PORTC |= _BV(heat);
+            }
+
+            /* clock running */
+            clock_running = millis() - cuurent_time;
+            ct = 220000 - clock_running;
+            Serial1.print("....................... ");
+            Serial1.print("Time : ");
+            Serial1.print(ct / 60000); // minutes
+
+            uint16_t clk = ct / 60000;
+
+            uint8_t m1 = clk / 10; // 4th digit
+            set_char(4, m1, dev, false);
+            uint8_t m2 = clk % 10; // 3rd digit
+            set_char(3, m2, dev, true);
+
+            Serial1.print(" : "); // minutes
+            ct = ct % 60000;
+            ct = ct / 1000;
+            Serial1.println(ct, 1);
+
+            uint8_t s1 = ct / 10; // 2nd digit
+            set_char(2, s1, dev, false);
+            uint8_t s2 = clock_running % 10; // 1st digit
+            set_char(1, s2, dev, false);
+
+            // Serial1.println(".....HE........");
+            /* VA! cycle */
+            PORTH |= _BV(vac); // vaccume pump on
+            PORTJ |= _BV(v4);  // 4th valve
+                               // PORTJ |= _BV(v1);  // 4th valve
+                               // PORTJ |= _BV(v2);  // 4th valve
+                               // PORTJ |= _BV(v3);  // 4th valve
+        }
+
+        PORTH &= ~_BV(vac);
+        PORTJ &= ~_BV(v4);
+        if (RS == 0)
+        {
+            process_status = 13;
+            Serial1.println("Process Stoped");
+        }
+
+        process_status = 6;
     }
 
     /* Raise pressure */
@@ -568,7 +785,7 @@ void prion_cycle(void)
     /* ##################################### RR2 #########################################################*/
     /********  V1 + MOTOR + V3 + STEAM +  STRAT FROM 00:00 + END AT 150 KPA **********/
 
-    if (process_status == 5)
+    if (process_status == 6)
     {
 
         PORTA &= ~_BV(start_led);
@@ -580,7 +797,446 @@ void prion_cycle(void)
         cuurent_time = millis();
         // float chamber_pressure;
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 445000) // 445000 // 7:25
+        while ((millis() - cuurent_time) < 150000) // 115000 // 2:30
+        {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 80, dev, false); // 80 P
+                    set_char(2, 82, dev, false); // 62 R
+                    set_char(1, 2, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
+            Serial1.print("current process running :");
+            Serial1.print(process_status);
+            Serial1.println("...PR2...");
+
+            if (!(PINL & (1 << 5)))
+            {
+                RS = 0;
+                delay(300);
+                break;
+            }
+            /* clock running */
+            clock_running = millis() - cuurent_time;
+            /* Get pressure and Temperature */
+            // chamber_pressure = get_sensor_data(); // print Data
+
+            pres = mpx();
+
+            Serial1.print("pressure : ");
+            Serial1.print(pres);
+            Serial1.println(" kPa");
+
+            tmp4 = TS1();
+            Serial1.print("Outer Body :");
+            Serial1.println(tmp4);
+
+            tmp2 = TS2();
+            Serial1.print("Chamber : ");
+            Serial1.println(tmp2);
+
+            tmp3 = TS3();
+            Serial1.print("Steam Generator : ");
+            Serial1.println(tmp3);
+
+            if (tmp3 >= 60)
+            {
+
+                PORTC &= ~_BV(steam);
+            }
+            else
+            {
+                PORTC |= _BV(steam);
+            }
+
+            /* Heat Ring */
+            if (tmp2 >= 134)
+            {
+
+                PORTC &= ~_BV(heat);
+            }
+            else
+            {
+                PORTC |= _BV(heat);
+            }
+
+            if (pres > 60)
+            {
+
+                PORTJ &= ~_BV(v1); // 1ST
+                // PORTJ &= ~_BV(v3);    // 1ST
+                PORTH &= ~_BV(motor); // 1ST // motor
+                process_status = 6;
+                break;
+            }
+
+            Serial1.print("....................... ");
+            Serial1.print("Time : ");
+            Serial1.print(clock_running / 60000); // minutes
+            uint16_t clk = clock_running / 60000;
+
+            uint8_t m1 = clk / 10; // 4th digit
+            set_char(4, m1, dev, false);
+            uint8_t m2 = clk % 10; // 3rd digit
+            set_char(3, m2, dev, true);
+
+            Serial1.print(" : "); // minutes
+            clock_running = clock_running % 60000;
+            clock_running = clock_running / 1000;
+            Serial1.println(clock_running);
+
+            uint8_t s1 = clock_running / 10; // 2nd digit
+            set_char(2, s1, dev, false);
+            uint8_t s2 = clock_running % 10; // 1st digit
+            set_char(1, s2, dev, false);
+
+            /* Get pressure and Temperature */
+            // get_sensor_data(); // print Data
+            // PORTJ &= ~_BV(v4);   // 1ST
+
+            PORTJ |= _BV(v3);
+            PORTJ |= _BV(v1); // 1ST
+
+            PORTH |= _BV(motor); // 1ST // motor
+            delay(50);
+            PORTH &= ~_BV(motor); // 1ST // motor
+
+            delay(2000);
+            // PORTC |= _BV(PORTC4); // 4TH  // steam
+        }
+
+        if (RS == 0)
+        {
+            process_status = 13;
+            Serial1.println("Process Stoped");
+        }
+        PORTJ &= ~_BV(v1);
+        process_status = 7;
+    }
+
+    /* Exaust */
+    /* ##################################### RE2 #########################################################*/
+    /* ##################################### RE2 #########################################################*/
+    /********  V2 +  STRAT FROM 00:00 + END AT 30 SEC **********/
+
+    if (process_status == 7)
+    {
+
+        PORTA &= ~_BV(start_led);
+        PORTK |= _BV(vacuum_led);
+        PORTK &= ~_BV(serilize_led);
+        PORTK &= ~_BV(dry_led);
+        PORTK &= ~_BV(end_led);
+
+        /* Get pressure and Temperature */
+        // chamber_pressure = get_sensor_data(); // print Data
+        cuurent_time = millis();
+        // clock_running = millis() - cuurent_time;
+        while ((millis() - cuurent_time) < 30000) // 30 sec
+        {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(2, 80, dev, false); // 69 e
+                    set_char(3, 82, dev, false); // 62 R
+                    set_char(1, 2, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
+            Serial1.print("current process running :");
+            Serial1.print(process_status);
+            Serial1.println("...RE1...");
+            if (!(PINL & (1 << 5)))
+            {
+                RS = 0;
+                delay(300);
+                break;
+            }
+            /* clock running */
+            clock_running = millis() - cuurent_time;
+
+            pres = mpx();
+            Serial1.print("pressure : ");
+            Serial1.print(pres);
+            Serial1.println(" kPa");
+
+            tmp4 = TS1();
+            Serial1.print("Outer Body :");
+            Serial1.println(tmp4);
+
+            tmp2 = TS2();
+            Serial1.print("Chamber : ");
+            Serial1.println(tmp2);
+
+            tmp3 = TS3();
+            Serial1.print("Steam Generator : ");
+            Serial1.println(tmp3);
+
+            /* Steam Generatoe */
+            if (tmp3 >= 150)
+            {
+
+                PORTC &= ~_BV(steam);
+            }
+            else
+            {
+                PORTC |= _BV(steam);
+            }
+
+            /* Heat Ring */
+            if (tmp2 >= 100)
+            {
+
+                PORTC &= ~_BV(heat);
+            }
+            else
+            {
+                PORTC |= _BV(heat);
+            }
+            Serial1.print("....................... ");
+            Serial1.print("Time : ");
+            Serial1.print(clock_running / 60000); // minutes
+            uint16_t clk = clock_running / 60000;
+
+            uint8_t m1 = clk / 10; // 4th digit
+            set_char(4, m1, dev, false);
+            uint8_t m2 = clk % 10; // 3rd digit
+            set_char(3, m2, dev, true);
+
+            Serial1.print(" : "); // minutes
+            clock_running = clock_running % 60000;
+            clock_running = clock_running / 1000;
+            Serial1.println(clock_running);
+
+            uint8_t s1 = clock_running / 10; // 2nd digit
+            set_char(2, s1, dev, false);
+            uint8_t s2 = clock_running % 10; // 1st digit
+            set_char(1, s2, dev, false);
+
+            /* Get pressure and Temperature */
+            // get_sensor_data(); // print Data
+            // PORTJ &= ~_BV(v4);   // 1ST
+            PORTJ |= _BV(v2);
+        }
+        PORTJ &= ~_BV(v2);
+
+        if (RS == 0)
+        {
+            process_status = 13;
+            Serial1.println("Process Stoped");
+        }
+        process_status = 8;
+    }
+
+    /* ##################################### 3rd vaccume #########################################################*/
+    /* ##################################### UA3 #########################################################*/
+    /********  V4 + VACCUME PUMP + STRAT FROM 2:40 + END AT -80 KPA **********/
+    if (process_status == 8)
+    {
+
+        PORTJ &= ~_BV(v3); // 4th valve
+        PORTJ &= ~_BV(v4); // 4th valve
+
+        cuurent_time = millis();
+        /* AC compnents status */
+        PORTC &= ~_BV(heat);
+        PORTC &= ~_BV(steam);
+
+        /* LED  status */
+        PORTA &= ~_BV(start_led);
+        PORTK |= _BV(vacuum_led);
+        PORTK &= ~_BV(serilize_led);
+        PORTK &= ~_BV(dry_led);
+        PORTK &= ~_BV(end_led);
+
+        /*  buzzer */
+
+        uint32_t ct = 0;
+
+        // // float chamber_pressure;
+        // clock_running = millis() - cuurent_time;
+        while ((millis() - cuurent_time) < 150000) // 2:30
+        {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(1, 85, dev, false); // 85 u
+                    set_char(2, 65, dev, false); // 65 a
+                    set_char(3, 3, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
+            // PORTA &= ~_BV(start_led);
+            // PORTK |= _BV(vacuum_led);
+            // PORTK &= ~_BV(serilize_led);
+            // PORTK &= ~_BV(dry_led);
+            // PORTK &= ~_BV(end_led);
+            Serial1.print("current process running :");
+            Serial1.print(process_status);
+            Serial1.println("...UA1...");
+
+            if (!(PINL & (1 << 5)))
+            {
+                RS = 0;
+                delay(300);
+                break;
+            }
+            /* Get pressure and Temperature */
+            // chamber_pressure = get_sensor_data(); // print Data
+
+            pres = mpx();
+            // lcd2_press(pres);
+            Serial1.print("pressure : ");
+            Serial1.print(pres);
+            Serial1.println(" kPa");
+
+            tmp4 = TS1();
+            Serial1.print("Outer Body :");
+            Serial1.println(tmp4);
+
+            tmp2 = TS2();
+            Serial1.print("Chamber : ");
+            Serial1.println(tmp2);
+
+            tmp3 = TS3();
+            Serial1.print("Steam Generator : ");
+            Serial1.println(tmp3);
+
+            /********** BREAK CONDITION ***************/
+            if (pres < -65)
+            {
+                PORTH &= ~_BV(vac);
+                PORTJ &= ~_BV(v4);
+                process_status = 3;
+                break;
+            }
+
+            /* Steam Generatoe */
+            if (tmp3 >= 200)
+            {
+
+                PORTC &= ~_BV(steam);
+            }
+            else
+            {
+                PORTC |= _BV(steam);
+            }
+
+            /* Heat Ring */
+            if (tmp3 >= 120)
+            {
+
+                PORTC &= ~_BV(heat);
+            }
+            else
+            {
+                PORTC |= _BV(heat);
+            }
+
+            /* clock running */
+            clock_running = millis() - cuurent_time;
+            ct = 220000 - clock_running;
+            Serial1.print("....................... ");
+            Serial1.print("Time : ");
+            Serial1.print(ct / 60000); // minutes
+
+            uint16_t clk = ct / 60000;
+
+            uint8_t m1 = clk / 10; // 4th digit
+            set_char(4, m1, dev, false);
+            uint8_t m2 = clk % 10; // 3rd digit
+            set_char(3, m2, dev, true);
+
+            Serial1.print(" : "); // minutes
+            ct = ct % 60000;
+            ct = ct / 1000;
+            Serial1.println(ct, 1);
+
+            uint8_t s1 = ct / 10; // 2nd digit
+            set_char(2, s1, dev, false);
+            uint8_t s2 = clock_running % 10; // 1st digit
+            set_char(1, s2, dev, false);
+
+            // Serial1.println(".....HE........");
+            /* VA! cycle */
+            PORTH |= _BV(vac); // vaccume pump on
+            PORTJ |= _BV(v4);  // 4th valve
+                               // PORTJ |= _BV(v1);  // 4th valve
+                               // PORTJ |= _BV(v2);  // 4th valve
+                               // PORTJ |= _BV(v3);  // 4th valve
+        }
+
+        PORTH &= ~_BV(vac);
+        PORTJ &= ~_BV(v4);
+        if (RS == 0)
+        {
+            process_status = 13;
+            Serial1.println("Process Stoped");
+        }
+
+        process_status = 9;
+    }
+
+    /* Raise pressure */
+
+    /* ##################################### PR3 #########################################################*/
+    /* ##################################### PR3 #########################################################*/
+    /********  V1 + MOTOR + V3 + STEAM +  STRAT FROM 00:00 + END AT 150 KPA **********/
+
+    if (process_status == 9)
+    {
+
+        count++;
+
+        if (count >= 5)
+        {
+            count = 0;
+            uint32_t tt1 = millis();
+            MAX7219_Clear(2);
+            while (millis() - tt1 < 1500)
+            {
+                set_char(3, 80, dev, false); // 80 P
+                set_char(2, 82, dev, false); // 62 R
+                set_char(1, 3, dev, false);  // 1
+            }
+            // MAX7219_Clear(2);
+        }
+
+        PORTA &= ~_BV(start_led);
+        PORTK |= _BV(vacuum_led);
+        PORTK &= ~_BV(serilize_led);
+        PORTK &= ~_BV(dry_led);
+        PORTK &= ~_BV(end_led);
+
+        cuurent_time = millis();
+        // float chamber_pressure;
+        // clock_running = millis() - cuurent_time;
+        while ((millis() - cuurent_time) < 450000) //// 7:30
         {
 
             Serial1.print("current process running :");
@@ -616,30 +1272,8 @@ void prion_cycle(void)
             Serial1.print("Steam Generator : ");
             Serial1.println(tmp3);
 
-            /* Steam Generatoe */
-            // PORTC |= _BV(steam);
-            // if (tmp2 >= 70)
-            // {
-
-            //   PORTC &= ~_BV(steam);
-            // }
-            // else
-            // {
-            //   PORTC |= _BV(steam);
-            // }
-
-            /* Heat Ring */
-            // if (tmp3 >= 68)
-            // {
-
-            //   PORTC &= ~_BV(heat);
-            // }
-            // else
-            // {
-            //   PORTC |= _BV(heat);
-            // }
-
-            if (tmp3 >= 180)
+    
+            if (tmp3 >= 216)
             {
 
                 PORTC &= ~_BV(steam);
@@ -707,19 +1341,37 @@ void prion_cycle(void)
 
         if (RS == 0)
         {
-            process_status = 9;
+            process_status = 13;
             Serial1.println("Process Stoped");
         }
         PORTJ &= ~_BV(v1);
-        process_status = 6;
+        process_status = 10;
     }
+
     /* Sterillization  */
     /* ##################################### &&&&&&&&&&&&&&& ST &&&&&&&&&&&&&&& #########################################################*/
     /* ##################################### &&&&&&&&&&&&&&& ST &&&&&&&&&&&&&&& #########################################################*/
     /********  V1 + MOTOR + V3 + STEAM +  STRAT FROM 04:00 + END AT 00:00 with maintain pressure of 218 kpa **********/
 
-    if (process_status == 6)
+    if (process_status == 10)
     {
+
+        count++;
+
+        if (count >= 5)
+        {
+            count = 0;
+            uint32_t tt1 = millis();
+            MAX7219_Clear(2);
+            while (millis() - tt1 < 1500)
+            {
+                set_char(3, 83, dev, false); // 83 s
+                set_char(2, 84, dev, false); // 84 t
+
+                // set_char(1, 1, dev, false);  // 1
+            }
+            // MAX7219_Clear(2);
+        }
 
         PORTA &= ~_BV(start_led);
         PORTK &= ~_BV(vacuum_led);
@@ -730,7 +1382,7 @@ void prion_cycle(void)
         cuurent_time = millis();
         // float chamber_pressure;
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 240000) // 240000 // 7:25
+        while ((millis() - cuurent_time) < 1080000) // 18 min
         {
 
             Serial1.print("current process running :");
@@ -767,7 +1419,7 @@ void prion_cycle(void)
             Serial1.println(tmp3);
 
             /* Steam Generatoe */
-            if (tmp3 >= 150)
+            if (tmp3 >= 218)
             {
 
                 PORTC &= ~_BV(steam);
@@ -822,19 +1474,20 @@ void prion_cycle(void)
         }
         if (RS == 0)
         {
-            process_status = 9;
+            process_status = 13;
             Serial1.println("Process Stoped");
         }
 
         PORTJ &= ~_BV(v1);
-        process_status = 7;
+        process_status = 11;
     }
+
     /* Exaust */
     /* ##################################### RE #########################################################*/
     /* ##################################### RE #########################################################*/
     /********  V2 +  STRAT FROM 00:00 + END AT 45 SEC **********/
 
-    else if (process_status == 7)
+    if (process_status == 11)
     {
 
         PORTA &= ~_BV(start_led);
@@ -848,8 +1501,24 @@ void prion_cycle(void)
 
         cuurent_time = millis();
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 45000) // 45sec  45000
+        while ((millis() - cuurent_time) < 52000) // 52 sec
         {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(2, 80, dev, false); // 69 e
+                    set_char(3, 82, dev, false); // 62 R
+
+                    // set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -930,18 +1599,19 @@ void prion_cycle(void)
         }
         if (RS == 0)
         {
-            process_status = 9;
+            process_status = 13;
             Serial1.println("Process Stoped");
         }
 
         PORTJ &= ~_BV(v1);
 
-        process_status = 8;
+        process_status = 12;
     }
+
     /* Drying */
     /* ##################################### DR #########################################################*/
     /* ##################################### DR #########################################################*/
-    /********  V2 +  STRAT FROM 00:00 + END AT 45 SEC **********/
+    /********  V2 +  STRAT FROM 00:00 + END AT 3:00 **********/
     /*
     9:00 - v4+vacc
     --- 1:40 ----  #100000
@@ -958,7 +1628,7 @@ void prion_cycle(void)
 
     */
 
-    if (process_status == 8)
+    if (process_status == 12)
     {
 
         PORTJ &= ~_BV(v1); //
@@ -976,8 +1646,25 @@ void prion_cycle(void)
 
         cuurent_time = millis();
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 540000) // 9min  540000
+        while ((millis() - cuurent_time) < 540000) // 9 min
         {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 68, dev, false); // 68 d
+                    set_char(2, 82, dev, false); // 82 r
+                    // set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
             Serial1.print("current process running :");
             Serial1.print(process_status);
             Serial1.println("...DR...");
@@ -1040,9 +1727,9 @@ void prion_cycle(void)
             uint16_t clk = clock_running / 60000;
 
             uint8_t m1 = clk / 10; // 4th digit
-                                    set_char(4, m1, dev, false);
+            set_char(4, m1, dev, false);
             uint8_t m2 = clk % 10; // 3rd digit
-                                    set_char(3, m2, dev, true);
+            set_char(3, m2, dev, true);
 
             Serial1.print(" : "); // minutes
             clock_running = ct % 60000;
@@ -1054,40 +1741,15 @@ void prion_cycle(void)
             uint8_t s2 = clock_running % 10; // 1st digit
             set_char(1, s2, dev, false);
 
-            if (ct >= 439051) // if (ct <= 100000 && ct > 0)
+            if (ct >= 95000) // if (ct <= 100000 && ct > 0)
             {
                 Serial1.println("firstt running.....");
                 PORTJ &= ~_BV(v2); //
                 PORTH |= _BV(vac); // vaccume pump on
                 PORTJ |= _BV(v4);  // 4th valve
             }
-            if (ct < 439051 && ct >= 409372) // if (ct > 100000 && ct <= 130000)
-            {
-                Serial1.println("second  running.....");
-                PORTH |= _BV(vac); // vaccume pump on
-                PORTJ |= _BV(v4);  // 4th valve
-                PORTJ |= _BV(v2);
-            }
-            if (ct < 409372 && ct >= 269265) // if (ct > 130000 && ct <= 270000)
-            {
-                PORTH |= _BV(vac); // vaccume pump on
-                PORTJ |= _BV(v4);  // 4th valve
-                PORTJ &= ~_BV(v2); //
-            }
-            if (ct < 269265 && ct >= 239586) // if (ct > 270000 && ct <= 300000)
-            {
-                PORTH |= _BV(vac); // vaccume pump on
-                PORTJ |= _BV(v4);  // 4th valve
-                PORTJ |= _BV(v2);  // 4th valve
-            }
-            if (ct < 239586 && ct >= 89240) // if (ct > 300000 && ct <= 450000)
-            {
 
-                PORTH |= _BV(vac); // vaccume pump on
-                PORTJ |= _BV(v4);  // 4th valve
-                PORTJ &= ~_BV(v2); //
-            }
-            if (ct < 89240)
+            if (ct < 95000)
             {
                 PORTH |= _BV(vac); // vaccume pump on
                 PORTJ |= _BV(v4);  // 4th valve
@@ -1097,10 +1759,19 @@ void prion_cycle(void)
 
         if (RS == 0)
         {
-            process_status = 9;
+            process_status = 13;
             Serial1.println("Process Stoped");
         }
 
-        process_status = 9;
+        process_status = 14;
+    }
+    if (process_status == 13)
+    {
+        Serial1.println("Abort");
+    }
+
+    if (process_status == 14)
+    {
+        Serial1.println("successfully run cycle");
     }
 }

@@ -140,22 +140,22 @@ ISR(TIMER4_OVF_vect)
   TIFR4 |= 0x01; // clear the interrupt flag
 }
 
-void ISR_door()
-{
-  //  PORTJ |= _BV(t134_led);
+// void ISR_door()
+// {
+//   //  PORTJ |= _BV(t134_led);
 
-  if (!(PINE & (1 << 4)))
-  {
-    door_status = 1;
-    Serial1.println("............Door Closed .............");
-  }
+//   if (!(PINE & (1 << 4)))
+//   {
+//     door_status = 1;
+//     Serial1.println("............Door Closed .............");
+//   }
 
-  else
-  {
-    door_status = 0;
-    Serial1.println("..........Please close the Door first  and check water status...........");
-  }
-}
+//   else
+//   {
+//     door_status = 0;
+//     Serial1.println("..........Please close the Door first  and check water status...........");
+//   }
+// }
 
 void ISR_water_fresh()
 {
@@ -177,8 +177,8 @@ void setup()
   Serial1.begin(9600);
   PcInt::attachInterrupt(63, handleA0);
 
-  attachInterrupt(digitalPinToInterrupt(2), ISR_door, CHANGE);        // door sensor
-  attachInterrupt(digitalPinToInterrupt(3), ISR_water_fresh, CHANGE); // water sensor
+  // attachInterrupt(digitalPinToInterrupt(2), ISR_door, CHANGE);        // door sensor
+  // attachInterrupt(digitalPinToInterrupt(3), ISR_water_fresh, CHANGE); // water sensor
   board_init();
   Disp_board_config();
   Timer1_init();
@@ -187,20 +187,54 @@ void setup()
    print_load();
 
   PORTH |= _BV(fan);
+
+  // PORTJ |= _BV(v2);
+
 }
 
 void loop()
 {
+
+// delay(1000);
+// if (!(PINE & (1 << 4)))
+// {
+
+// door_status = 1;
+// Serial1.print("..................."); // get from intrupt
+//   // Serial1.println(door_status);
+
+
+// }
+
+// else
+// {
+// door_status = 1;
+
+// }
+
+
+  if (PINE & (1 << 5))
+  {
+    //  // Serial1.println("lower sensor WATER empty");
+    PORTA |= _BV(water_status_led);
+    fresh = 1;
+  }
+  else
+  {
+    PORTA &= ~_BV(water_status_led);
+    fresh = 0;
+  }
+
 
   Serial1.println("............................................................"); // get from intrupt
 
   Serial1.print("Door staus   --->  1 - open :: 2 - close ::::"); // get from intrupt
   Serial1.println(door_status);
 
-  Serial1.print("Drain staus  --->  1 - full :: 2 - empty :::::"); // get from polling
+  Serial1.print("Drain staus  --->  1 - full :: 0 - empty :::::"); // get from polling
   Serial1.println(drain);
 
-  Serial1.print("Fresh staus  --->  1 - full  :: 2 - empty :::::"); // get from intrupt
+  Serial1.print("Fresh staus  --->  0 - full  :: 1 - empty :::::"); // get from intrupt
   Serial1.println(fresh);
 
   Serial1.println("--------------------------------------");
@@ -291,7 +325,7 @@ void loop()
 
     delay(300);
 
-    if ((drain == 1) && (fresh == 0)) // && (door_status == 1)
+    if ((drain == 0) && (fresh == 0)) // && (door_status == 1)
     {
       RS = 1;
       Serial1.println("TRIGGER ...................");
@@ -337,7 +371,7 @@ void loop()
 
         case 2:
           Serial1.println("wrapped_cycle");
-          // wrapped_cycle();
+          wrapped_cycle();
           break;
 
         case 3:

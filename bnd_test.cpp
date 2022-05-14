@@ -797,7 +797,7 @@ void bnd_test_cycle(void)
         cuurent_time = millis();
         // float chamber_pressure;
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 115000) // 115000 // 2:30
+        while ((millis() - cuurent_time) < 150000) // 115000 // 2:30
         {
 
             count++;
@@ -926,7 +926,7 @@ void bnd_test_cycle(void)
 
     /* Exaust */
     /* ##################################### RE2 #########################################################*/
-    /* ##################################### RE1 #########################################################*/
+    /* ##################################### RE2 #########################################################*/
     /********  V2 +  STRAT FROM 00:00 + END AT 30 SEC **********/
 
     if (process_status == 7)
@@ -942,7 +942,7 @@ void bnd_test_cycle(void)
         // chamber_pressure = get_sensor_data(); // print Data
         cuurent_time = millis();
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 30000) // 40sec  40000
+        while ((millis() - cuurent_time) < 30000) // 30 sec
         {
             count++;
 
@@ -1072,7 +1072,7 @@ void bnd_test_cycle(void)
 
         // // float chamber_pressure;
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 140000) // 140000 :: 2:20
+        while ((millis() - cuurent_time) < 150000) // 140000 :: 2:30
         {
 
             count++;
@@ -1236,7 +1236,7 @@ void bnd_test_cycle(void)
         cuurent_time = millis();
         // float chamber_pressure;
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 115000) // 115000 // 2:30
+        while ((millis() - cuurent_time) < 500000) //// 8:20
         {
 
             Serial1.print("current process running :");
@@ -1404,7 +1404,7 @@ void bnd_test_cycle(void)
         cuurent_time = millis();
         // float chamber_pressure;
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 240000) // 240000 // 7:25
+        while ((millis() - cuurent_time) < 240000) // 4 min
         {
 
             Serial1.print("current process running :");
@@ -1668,7 +1668,7 @@ void bnd_test_cycle(void)
 
         cuurent_time = millis();
         // clock_running = millis() - cuurent_time;
-        while ((millis() - cuurent_time) < 180000) // 9min  540000
+        while ((millis() - cuurent_time) < 180000) // 3min  540000
         {
 
             count++;

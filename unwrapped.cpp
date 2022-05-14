@@ -49,7 +49,7 @@ void unwrapped_cycle(void)
                 while (millis() - tt1 < 1500)
                 {
                     set_char(3, 72, dev, false); // 72 h
-                    set_char(2, 69, dev, false); //69 e
+                    set_char(2, 69, dev, false); // 69 e
                     // set_char(1, 1, dev, false);  // 1
                 }
                 // MAX7219_Clear(2);
@@ -129,7 +129,7 @@ void unwrapped_cycle(void)
             }
 
             /* Heat Ring */
-            if (tmp2 >= 100)
+            if (tmp2 >= 110)
             {
 
                 PORTC &= ~_BV(heat);
@@ -175,11 +175,22 @@ void unwrapped_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 220000) // 220000 :: 3:40
         {
-            // PORTA &= ~_BV(start_led);
-            // PORTK |= _BV(vacuum_led);
-            // PORTK &= ~_BV(serilize_led);
-            // PORTK &= ~_BV(dry_led);
-            // PORTK &= ~_BV(end_led);
+
+            count++;
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 85, dev, false); // 85 u
+                    set_char(2, 65, dev, false); // 65 a
+                    set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
             Serial1.print("current process running :");
             Serial1.print(process_status);
             Serial1.println("...UA1...");
@@ -245,16 +256,16 @@ void unwrapped_cycle(void)
             /* clock running */
             clock_running = millis() - cuurent_time;
 
-            if ((clock_running % 30000) == 0)
-            {
-                while (millis() - clock_running > 5000)
-                {
-                    set_char(1, 85, dev, false); // 85 u
-                    set_char(2, 65, dev, false); // 65 a
-                    set_char(3, 1, dev, false);  // 1
-                }
-                MAX7219_Clear(2);
-            }
+            // if ((clock_running % 30000) == 0)
+            // {
+            //     while (millis() - clock_running > 5000)
+            //     {
+            //         set_char(1, 85, dev, false); // 85 u
+            //         set_char(2, 65, dev, false); // 65 a
+            //         set_char(3, 1, dev, false);  // 1
+            //     }
+            //     MAX7219_Clear(2);
+            // }
 
             ct = 220000 - clock_running;
             Serial1.print("....................... ");
@@ -669,7 +680,7 @@ void unwrapped_cycle(void)
             //   PORTC |= _BV(heat);
             // }
 
-            if (tmp3 >= 180)
+            if (tmp3 >= 200)
             {
 
                 PORTC &= ~_BV(steam);
@@ -680,7 +691,7 @@ void unwrapped_cycle(void)
             }
 
             /* Heat Ring */
-            if (tmp2 >= 134)
+            if (tmp2 >= 135)
             {
 
                 PORTC &= ~_BV(heat);
@@ -690,7 +701,7 @@ void unwrapped_cycle(void)
                 PORTC |= _BV(heat);
             }
 
-            if (pres > 217)
+            if (pres >= 217)
             {
 
                 PORTJ &= ~_BV(v1); // 1ST
@@ -728,7 +739,7 @@ void unwrapped_cycle(void)
             PORTJ |= _BV(v1); // 1ST
 
             PORTH |= _BV(motor); // 1ST // motor
-            delay(50);
+            delay(80);
             PORTH &= ~_BV(motor); // 1ST // motor
 
             delay(2000);
@@ -812,7 +823,7 @@ void unwrapped_cycle(void)
             Serial1.println(tmp3);
 
             /* Steam Generatoe */
-            if (tmp3 >= 150)
+            if (tmp3 >= 200)
             {
 
                 PORTC &= ~_BV(steam);
@@ -823,7 +834,7 @@ void unwrapped_cycle(void)
             }
 
             /* Heat Ring */
-            if (tmp2 >= 100)
+            if (tmp2 >= 130)
             {
 
                 PORTC &= ~_BV(heat);
@@ -879,7 +890,7 @@ void unwrapped_cycle(void)
     /* ##################################### RE #########################################################*/
     /********  V2 +  STRAT FROM 00:00 + END AT 45 SEC **********/
 
-    else if (process_status == 7)
+     if (process_status == 7)
     {
 
         PORTA &= ~_BV(start_led);
@@ -1065,7 +1076,7 @@ void unwrapped_cycle(void)
             }
             /* clock running */
             clock_running = millis() - cuurent_time;
-            ct = -clock_running;
+            ct = 540000 - clock_running;
             // Serial1.print("CT value.....");
             // Serial1.println(ct);
 
@@ -1175,6 +1186,10 @@ void unwrapped_cycle(void)
             process_status = 9;
             Serial1.println("Process Stoped");
         }
+
+                 PORTH &= ~ _BV(vac); // vaccume pump on
+                PORTJ &=  ~ _BV(v4);  // 4th valve
+                PORTJ &=  ~ _BV(v2);  // 4th valve
 
         process_status = 9;
     }
