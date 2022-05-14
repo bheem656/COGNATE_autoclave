@@ -22,6 +22,7 @@ extern float tmp3;
 void bnd_test_cycle(void)
 {
 
+    uint8_t count = 0;
     if (process_status == 1)
     {
 
@@ -38,6 +39,21 @@ void bnd_test_cycle(void)
         // clock_running = millis() - cuurent_time;   6:40 sec
         while ((millis() - cuurent_time) < 400000) // 400000
         {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 72, dev, false); // 72 h
+                    set_char(2, 69, dev, false); // 69 e
+                    // set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             PORTA |= _BV(start_led);
             PORTK &= ~_BV(vacuum_led);
@@ -197,6 +213,23 @@ void bnd_test_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 160000) // 160000 :: 2:40
         {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(1, 85, dev, false); // 85 u
+                    set_char(2, 65, dev, false); // 65 a
+                    set_char(3, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
             PORTA &= ~_BV(start_led);
             PORTK |= _BV(vacuum_led);
             PORTK &= ~_BV(serilize_led);
@@ -327,6 +360,22 @@ void bnd_test_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 210000) // 210000 // 3:30
         {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 80, dev, false); // 80 P
+                    set_char(2, 82, dev, false); // 62 R
+                    set_char(1, 2, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -472,6 +521,22 @@ void bnd_test_cycle(void)
         while ((millis() - cuurent_time) < 40000) // 40sec  40000
         {
 
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(2, 80, dev, false); // 69 e
+                    set_char(3, 82, dev, false); // 62 R
+                    set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
             Serial1.print("current process running :");
             Serial1.print(process_status);
             Serial1.println("...RE1...");
@@ -562,6 +627,7 @@ void bnd_test_cycle(void)
     /********  V4 + VACCUME PUMP + STRAT FROM 2:40 + END AT -80 KPA **********/
     if (process_status == 5)
     {
+
         PORTJ &= ~_BV(v3); // 4th valve
         PORTJ &= ~_BV(v4); // 4th valve
 
@@ -585,6 +651,23 @@ void bnd_test_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 140000) // 140000 :: 2:20
         {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(1, 85, dev, false); // 85 u
+                    set_char(2, 65, dev, false); // 65 a
+                    set_char(3, 2, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
             PORTA &= ~_BV(start_led);
             PORTK |= _BV(vacuum_led);
             PORTK &= ~_BV(serilize_led);
@@ -717,6 +800,22 @@ void bnd_test_cycle(void)
         while ((millis() - cuurent_time) < 115000) // 115000 // 2:30
         {
 
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 80, dev, false); // 80 P
+                    set_char(2, 82, dev, false); // 62 R
+                    set_char(1, 2, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
             Serial1.print("current process running :");
             Serial1.print(process_status);
             Serial1.println("...PR2...");
@@ -845,6 +944,21 @@ void bnd_test_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 30000) // 40sec  40000
         {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(2, 80, dev, false); // 69 e
+                    set_char(3, 82, dev, false); // 62 R
+                    set_char(1, 2, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -936,6 +1050,7 @@ void bnd_test_cycle(void)
     /********  V4 + VACCUME PUMP + STRAT FROM 2:40 + END AT -80 KPA **********/
     if (process_status == 8)
     {
+
         PORTJ &= ~_BV(v3); // 4th valve
         PORTJ &= ~_BV(v4); // 4th valve
 
@@ -959,11 +1074,28 @@ void bnd_test_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 140000) // 140000 :: 2:20
         {
-            PORTA &= ~_BV(start_led);
-            PORTK |= _BV(vacuum_led);
-            PORTK &= ~_BV(serilize_led);
-            PORTK &= ~_BV(dry_led);
-            PORTK &= ~_BV(end_led);
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(1, 85, dev, false); // 85 u
+                    set_char(2, 65, dev, false); // 65 a
+                    set_char(3, 3, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
+            // PORTA &= ~_BV(start_led);
+            // PORTK |= _BV(vacuum_led);
+            // PORTK &= ~_BV(serilize_led);
+            // PORTK &= ~_BV(dry_led);
+            // PORTK &= ~_BV(end_led);
             Serial1.print("current process running :");
             Serial1.print(process_status);
             Serial1.println("...UA1...");
@@ -1078,6 +1210,22 @@ void bnd_test_cycle(void)
 
     if (process_status == 9)
     {
+
+        count++;
+
+        if (count >= 5)
+        {
+            count = 0;
+            uint32_t tt1 = millis();
+            MAX7219_Clear(2);
+            while (millis() - tt1 < 1500)
+            {
+                set_char(3, 80, dev, false); // 80 P
+                set_char(2, 82, dev, false); // 62 R
+                set_char(1, 3, dev, false);  // 1
+            }
+            // MAX7219_Clear(2);
+        }
 
         PORTA &= ~_BV(start_led);
         PORTK |= _BV(vacuum_led);
@@ -1230,6 +1378,23 @@ void bnd_test_cycle(void)
     if (process_status == 10)
     {
 
+        count++;
+
+        if (count >= 5)
+        {
+            count = 0;
+            uint32_t tt1 = millis();
+            MAX7219_Clear(2);
+            while (millis() - tt1 < 1500)
+            {
+                set_char(3, 83, dev, false); // 83 s
+                set_char(2, 84, dev, false); // 84 t
+
+                // set_char(1, 1, dev, false);  // 1
+            }
+            // MAX7219_Clear(2);
+        }
+
         PORTA &= ~_BV(start_led);
         PORTK &= ~_BV(vacuum_led);
         PORTK |= _BV(serilize_led);
@@ -1344,7 +1509,7 @@ void bnd_test_cycle(void)
     /* ##################################### RE #########################################################*/
     /********  V2 +  STRAT FROM 00:00 + END AT 45 SEC **********/
 
-    else if (process_status == 11)
+    if (process_status == 11)
     {
 
         PORTA &= ~_BV(start_led);
@@ -1360,6 +1525,22 @@ void bnd_test_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 45000) // 45sec  45000
         {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(2, 80, dev, false); // 69 e
+                    set_char(3, 82, dev, false); // 62 R
+
+                    // set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -1489,6 +1670,23 @@ void bnd_test_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 180000) // 9min  540000
         {
+
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 68, dev, false); // 68 d
+                    set_char(2, 82, dev, false); // 82 r
+                    // set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
+
             Serial1.print("current process running :");
             Serial1.print(process_status);
             Serial1.println("...DR...");

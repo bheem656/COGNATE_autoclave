@@ -4,7 +4,7 @@
 #include "max.h"
 
 // #define debug 1
-extern uint8_t dev ;
+extern uint8_t dev;
 
 extern uint8_t process_status;
 extern uint32_t cuurent_time;
@@ -22,6 +22,8 @@ extern float tmp3;
 void unwrapped_cycle(void)
 {
 
+    uint16_t count = 0;
+
     if (process_status == 1)
     {
 
@@ -38,6 +40,20 @@ void unwrapped_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 400000) // 400000
         {
+            count++;
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 72, dev, false); // 72 h
+                    set_char(2, 69, dev, false); //69 e
+                    // set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             PORTA |= _BV(start_led);
             PORTK &= ~_BV(vacuum_led);
@@ -62,9 +78,6 @@ void unwrapped_cycle(void)
             Serial1.print("pressure : ");
             Serial1.print(pres);
             Serial1.println(" kPa");
-      
-
-
 
             tmp4 = TS1();
             Serial1.print("Outer Body :");
@@ -79,31 +92,7 @@ void unwrapped_cycle(void)
             Serial1.print("Steam Generator : ");
             Serial1.println(tmp3);
 
-            //  if (tmp3 > 180 && tmp4 > 100)
-            //  {
-            //    process_status = 2;
-            //    break;
-            //  }
-
-            // chamber_pressure = get_sensor_data(); // print Data
-            // uint32_t last_time =
             clock_running = millis() - cuurent_time;
-
-            // if( (millis() - last_time)  >= 5000)
-            // {
-            //   err_time = 1;
-            //   last_time = millis();
-
-            // }
-
-            // else
-            // {
-
-            //   err_time = 0;
-            // }
-
-            // if(!err_time)
-            // {
 
             Serial1.print("....................... ");
             Serial1.print("Time : ");
@@ -128,20 +117,6 @@ void unwrapped_cycle(void)
             set_char(1, s2, dev, false);
             // MAX7219_Clear(2);
 
-            // }
-
-            // else
-
-            // {
-
-            //       set_char(1, 16, 1, false); //
-            //       set_char(2, 14, 1, false); // 68 e
-            //       set_char(3, 72, 1, false); // 72 h
-            //       set_char(4, 16, 1, false); // 76
-            //     // MAX7219_Clear(2);
-
-            // }
-
             /* Steam Generatoe */
             if (tmp3 >= 200)
             {
@@ -163,15 +138,13 @@ void unwrapped_cycle(void)
             {
                 PORTC |= _BV(heat);
             }
-        
-          
-        if (RS == 0)
-        {
-            process_status = 9;
-            Serial1.println("Process Stoped");
-        }
 
-          }
+            if (RS == 0)
+            {
+                process_status = 9;
+                Serial1.println("Process Stoped");
+            }
+        }
         process_status = 2;
     }
     /* ##################################### 1st vaccume #########################################################*/
@@ -271,6 +244,18 @@ void unwrapped_cycle(void)
 
             /* clock running */
             clock_running = millis() - cuurent_time;
+
+            if ((clock_running % 30000) == 0)
+            {
+                while (millis() - clock_running > 5000)
+                {
+                    set_char(1, 85, dev, false); // 85 u
+                    set_char(2, 65, dev, false); // 65 a
+                    set_char(3, 1, dev, false);  // 1
+                }
+                MAX7219_Clear(2);
+            }
+
             ct = 220000 - clock_running;
             Serial1.print("....................... ");
             Serial1.print("Time : ");
@@ -332,6 +317,20 @@ void unwrapped_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 445000) // 445000 // 7:25
         {
+            count++;
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 80, dev, false); // 80 P
+                    set_char(2, 82, dev, false); // 62 R
+                    set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -344,6 +343,7 @@ void unwrapped_cycle(void)
             }
             /* clock running */
             clock_running = millis() - cuurent_time;
+
             /* Get pressure and Temperature */
             // chamber_pressure = get_sensor_data(); // print Data
 
@@ -476,6 +476,21 @@ void unwrapped_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 45000) // 45sec  45000
         {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(2, 80, dev, false); // 69 e
+                    set_char(3, 82, dev, false); // 62 R
+                    set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -582,6 +597,21 @@ void unwrapped_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 445000) // 445000 // 7:25
         {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 80, dev, false); // 80 P
+                    set_char(2, 82, dev, false); // 62 R
+                    set_char(1, 2, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -732,6 +762,21 @@ void unwrapped_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 240000) // 240000 // 7:25
         {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 83, dev, false); // 83 s
+                    set_char(2, 84, dev, false); // 84 t
+                    // set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -850,6 +895,21 @@ void unwrapped_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 45000) // 45sec  45000
         {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(2, 80, dev, false); // 69 e
+                    set_char(3, 82, dev, false); // 62 R
+                    // set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
 
             Serial1.print("current process running :");
             Serial1.print(process_status);
@@ -978,6 +1038,21 @@ void unwrapped_cycle(void)
         // clock_running = millis() - cuurent_time;
         while ((millis() - cuurent_time) < 540000) // 9min  540000
         {
+            count++;
+
+            if (count >= 5)
+            {
+                count = 0;
+                uint32_t tt1 = millis();
+                MAX7219_Clear(2);
+                while (millis() - tt1 < 1500)
+                {
+                    set_char(3, 68, dev, false); // 68 d
+                    set_char(2, 82, dev, false); // 82 r
+                    // set_char(1, 1, dev, false);  // 1
+                }
+                // MAX7219_Clear(2);
+            }
             Serial1.print("current process running :");
             Serial1.print(process_status);
             Serial1.println("...DR...");
@@ -1040,9 +1115,9 @@ void unwrapped_cycle(void)
             uint16_t clk = clock_running / 60000;
 
             uint8_t m1 = clk / 10; // 4th digit
-                                    set_char(4, m1, dev, false);
+            set_char(4, m1, dev, false);
             uint8_t m2 = clk % 10; // 3rd digit
-                                    set_char(3, m2, dev, true);
+            set_char(3, m2, dev, true);
 
             Serial1.print(" : "); // minutes
             clock_running = ct % 60000;
