@@ -1,14 +1,13 @@
 #ifndef disp_h
 #define disp_h
 
- #include <Arduino.h>
-
+#include <Arduino.h>
 
 // byte charTable[]  = {
 //    B01111110, B00110000, B01101101, B01111001, B00110011, B01011011, B01011111, B01110000, B01111111, B01111011};
 
 // This is the combined array that contains all the segment configurations for many different characters and symbols
-const uint8_t characterArray[]  = {
+const uint8_t characterArray[] = {
     //  ABCDEFG  Segments      7-segment map:
     0b1111110, // 0   "0"          AAA
     0b0110000, // 1   "1"         F   B
@@ -161,17 +160,17 @@ const uint8_t characterArray[]  = {
 void Disp_board_config(void);
 // timer1_init();
 
-
 void initialize_lcd();
 void Disp_board_config(void);
-void MAX7219_Clear (uint8_t device);
+void MAX7219_Clear(uint8_t device);
 void maxTransfer(uint8_t address, uint8_t value, uint8_t device);
 void set_char(uint8_t pos, uint8_t val, uint8_t device, bool dp);
-void lcd3_time_incr(uint8_t min, uint8_t sec);
-void lcd3_time_decr(uint8_t min, uint8_t sec);
+// void lcd3_time_incr(uint8_t min, uint8_t sec);
+// void lcd3_time_decr(uint8_t min, uint8_t sec);
 void lcd1_temp(float temp);
 void lcd2_press(float press);
 void timer1_init(void);
+void print_load(void);
 // void lcd_init(void);
 
 #endif

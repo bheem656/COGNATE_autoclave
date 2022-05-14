@@ -3,15 +3,29 @@
 int fullScale = 9630; // max pressure (span) adjust
 float R0 = 1000;
 float alpha = 0.00385;
+//
+extern uint8_t prgrm_sw;
+extern uint8_t test_sw;
 
 void Timer1_init(void)
 {
   // Timer Control - 2 registers:
   TCCR1A = 0x00;  // disable all pin outputs on compare
-  TCCR1B = 0x02;  // clk/1024   // 3.8 time for 1 sec
+  TCCR1B = 0x02;  // clk/8   // 3.8 time for 1 sec
   TIMSK1 |= 0x01; // bit 0 - overflow interrupt enable
   TIFR1 |= 0x01;  // clear the overflow flag
-  sei();          // enable global interrupts
+
+  //    TCCR3A = 0x00;  // disable all pin outputs on compare
+  //  TCCR3B = 0x03;  // clk/64   // 3.8 time for 1 sec
+  //  TIMSK3 |= 0x01; // bit 0 - overflow interrupt enable
+  //  TIFR3 |= 0x01;  // clear the overflow flag
+
+  //  TCCR4A = 0x00;  // disable all pin outputs on compare
+  //  TCCR4B = 0x02;  // clk/64   // 3.8 time for 1 sec
+  //  TIMSK4 |= 0x01; // bit 0 - overflow interrupt enable
+  //  TIFR4 |= 0x01;  // clear the overflow flag
+
+  sei(); // enable global interrupts
 }
 
 void board_init(void)
@@ -28,6 +42,26 @@ void board_init(void)
   DDRE &= ~(1 << 5); // SW3
   DDRE &= ~(1 << 6); // SW2
   DDRE &= ~(1 << 7); // SW1
+
+  PORTK |= (1 << 4);
+  PORTK |= (1 << 5);
+  PORTK |= (1 << 6);
+  PORTK |= (1 << 7);
+
+  // INPUT BUTTONS
+  // L4,5,6,7 , PK1
+  DDRL &= ~(0xD0);  // 1101
+  DDRL |= (1 << 5); // L5 AS A OUTPUT
+  DDRK &= ~(1 << 1);
+
+  // Enable the pull-up resistor on PL4 using the Port L Data Register (PORTL)
+  PORTL |= _BV(PORTL4);
+  // Enable the pull-up resistor on PL5 using the Port L Data Register (PORTL)
+  //  PORTL |= _BV(PORTL5);
+  // Enable the pull-up resistor on PL6 using the Port L Data Register (PORTL)
+  PORTL |= _BV(PORTL6);
+  PORTL |= _BV(PORTL7);
+  PORTK |= _BV(PORTK1);
 
   // ALL VALVE  OUTPUT PORT
   DDRJ |= _BV(DDJ3);
@@ -46,19 +80,14 @@ void board_init(void)
 
   // ALL LED
   DDRA |= 0xFF;
-  DDRK |= 0xFE;
+  DDRK |= 0xFC;
   DDRJ |= _BV(DDJ7);
 
-  // INPUT BUTTONS
-  // L4,5,6,7
-  DDRL &= ~(0xF0);
-  // Enable the pull-up resistor on PL4 using the Port L Data Register (PORTL)
-  PORTL |= _BV(PORTL4);
-  // Enable the pull-up resistor on PL5 using the Port L Data Register (PORTL)
-  PORTL |= _BV(PORTL5);
-  // Enable the pull-up resistor on PL6 using the Port L Data Register (PORTL)
-  PORTL |= _BV(PORTL6);
-  PORTL |= _BV(PORTL7);
+  PORTA &= ~(0xFF);
+  PORTK &= ~(0xFC);
+  PORTJ &= ~(1 << 7);
+
+  // PORTE |= _BV(PORTE4);
 }
 
 float TS1(void)
@@ -72,17 +101,17 @@ float TS1(void)
   for (int i = 0; i < 10; i++)
   {
     ts11 += analogRead(rtd2);
-    delay(10);
+    delay(5);
   }
 
   ts11 /= 10;
   V11 = (ts11 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
-  // Serial1.print("VOLATAGE : ");
-  // Serial1.println(V11);
+  // // Serial1.print("VOLATAGE : ");
+  // // Serial1.println(V11);
   Rx11 = 1000 * ((2.18 * V11) / (5 - V11)); // 2.18
 
-  // Serial1.print("resistance : ");
-  // Serial1.println(Rx11);
+  // // Serial1.print("resistance : ");
+  // // Serial1.println(Rx11);
 
   temp11 = ((Rx11 / R0) - 1) / alpha;
 
@@ -94,8 +123,8 @@ float TS1(void)
   // Rx11 = V11*slope+C; //y=mx+c
   //   // Resistance to Temperature
   //   temp11= (Rx11/R0-1.0)/alpha; // from Rx = R0(1+alpha*X)
-  //         Serial1.print("resistance : ");
-  // Serial1.println(Rx1);
+  //         // Serial1.print("resistance : ");
+  // // Serial1.println(Rx1);
 
   // Uncommect to convet celsius to fehrenheit
   // temp = temp*1.8+32;
@@ -115,17 +144,17 @@ float TS2(void)
   for (int i = 0; i < 10; i++)
   {
     ts12 += analogRead(rtd3);
-    delay(50);
+    delay(5);
   }
 
   ts12 /= 10;
   V12 = (ts12 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
-  //     Serial1.print("VOLATAGE : ");
-  // Serial1.println(V12);
+  //     // Serial1.print("VOLATAGE : ");
+  // // Serial1.println(V12);
 
   Rx12 = 1000 * ((2.19 * V12) / (5 - V12));
-  // Serial1.print("resistance : ");
-  // Serial1.println(Rx12);
+  // // Serial1.print("resistance : ");
+  // // Serial1.println(Rx12);
 
   temp12 = ((Rx12 / R0) - 1) / alpha;
 
@@ -137,8 +166,8 @@ float TS2(void)
   // Rx12 = V12*slope+C; //y=mx+c
   //   // Resistance to Temperature
   //   temp12= (Rx12/R0-1.0)/alpha; // from Rx = R0(1+alpha*X)
-  //         Serial1.print("resistance : ");
-  // Serial1.println(Rx1);
+  //         // Serial1.print("resistance : ");
+  // // Serial1.println(Rx1);
 
   // Uncommect to convet celsius to fehrenheit
   // temp = temp*1.8+32;
@@ -157,17 +186,17 @@ float TS3(void)
   for (int i = 0; i < 10; i++)
   {
     ts1 += analogRead(rtd5);
-    delay(50);
+    delay(5);
   }
 
   ts1 /= 10;
   V1 = (ts1 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
-  // Serial1.print("VOLATAGE : ");
-  // Serial1.println(V1);
+  // // Serial1.print("VOLATAGE : ");
+  // // Serial1.println(V1);
   Rx1 = 1000 * ((2.18 * V1) / (5 - V1));
 
-  // Serial1.print("resistance : ");
-  // Serial1.println(Rx1);
+  // // Serial1.print("resistance : ");
+  // // Serial1.println(Rx1);
 
   temp1 = ((Rx1 / R0) - 1) / alpha;
   // float C = 88;
@@ -178,8 +207,8 @@ float TS3(void)
   // Rx1 = V1*slope+C; //y=mx+c
   //   // Resistance to Temperature
   //   temp= (Rx1/R0-1.0)/alpha; // from Rx = R0(1+alpha*X)
-  //         Serial1.print("resistance : ");
-  // Serial1.println(Rx1);
+  //         // Serial1.print("resistance : ");
+  // // Serial1.println(Rx1);
 
   // Uncommect to convet celsius to fehrenheit
   // temp = temp*1.8+32;
@@ -198,8 +227,8 @@ float mpx(void)
   float voltage = raw * 0.004887586; // let the compiler determine how many digits it can handle
   float pressure = 0.0;
 
-  //   Serial1.print("voltage: \t");
-  //  Serial1.println(voltage,  3 );
+  //   // Serial1.print("voltage: \t");
+  //  // Serial1.println(voltage,  3 );
   // MATH
   if (voltage < 4.6)
   {
@@ -229,11 +258,175 @@ float mpx(void)
   //  volatile float prr = (rawValue - offset) * 700.0 / (fullScale - offset); // pressure conversion
 
   //
-  //  Serial1.print("Raw A/D is  ");
-  //  Serial1.print(rawValue);
-  //  Serial1.print("   Pressure is  ");
-  //  Serial1.print(prr, 1); // one decimal places
-  //  Serial1.println("  kPa");
+  //  // Serial1.print("Raw A/D is  ");
+  //  // Serial1.print(rawValue);
+  //  // Serial1.print("   Pressure is  ");
+  //  // Serial1.print(prr, 1); // one decimal places
+  //  // Serial1.println("  kPa");
 
   return pressure;
 }
+//
+void status_led_glow()
+{
+  if (prgrm_sw)
+  {
+
+    if (prgrm_sw == 1)
+    {
+      PORTA |= _BV(unwrapped_led);
+      PORTA &= ~_BV(wrapped_led);
+      PORTA &= ~_BV(prion_led);
+      PORTA &= ~_BV(porous_led);
+
+      PORTA &= ~_BV(bnd_s__led);
+      PORTK &= ~_BV(vacuum_s_led);
+
+      PORTJ |= _BV(t134_led);
+      PORTK &= ~_BV(t121_led);
+    }
+    else if (prgrm_sw == 2)
+    {
+      PORTA &= ~_BV(unwrapped_led);
+      PORTA |= _BV(wrapped_led);
+      PORTA &= ~_BV(prion_led);
+      PORTA &= ~_BV(porous_led);
+
+      PORTA &= ~_BV(bnd_s__led);
+      PORTK &= ~_BV(vacuum_s_led);
+
+      PORTJ |= _BV(t134_led);
+      PORTK &= ~_BV(t121_led);
+    }
+    else if (prgrm_sw == 3)
+    {
+      PORTA &= ~_BV(unwrapped_led);
+      PORTA &= ~_BV(wrapped_led);
+      PORTA |= _BV(prion_led);
+      PORTA &= ~_BV(porous_led);
+
+      PORTA &= ~_BV(bnd_s__led);
+      PORTK &= ~_BV(vacuum_s_led);
+
+      PORTJ |= _BV(t134_led);
+      PORTK &= ~_BV(t121_led);
+    }
+    else if (prgrm_sw == 4)
+    {
+      PORTA &= ~_BV(unwrapped_led);
+      PORTA &= ~_BV(wrapped_led);
+      PORTA &= ~_BV(prion_led);
+      PORTA |= _BV(porous_led);
+
+      PORTA &= ~_BV(bnd_s__led);
+      PORTK &= ~_BV(vacuum_s_led);
+      //
+      PORTJ &= ~_BV(t134_led);
+      PORTK |= _BV(t121_led);
+    }
+    else if (prgrm_sw == 5)
+    {
+
+      PORTA |= _BV(unwrapped_led);
+      PORTA |= _BV(wrapped_led);
+      PORTA |= _BV(prion_led);
+      PORTA |= _BV(porous_led);
+
+      PORTA &= ~_BV(bnd_s__led);
+      PORTK &= ~_BV(vacuum_s_led);
+
+      PORTJ |= _BV(t134_led);
+      PORTK &= ~_BV(t121_led);
+    }
+  }
+
+  if (test_sw)
+  {
+    //  prgrm_sw = 0;
+
+    if (test_sw == 1)
+    {
+      PORTA |= _BV(bnd_s__led);
+      PORTK &= ~_BV(vacuum_s_led);
+
+      PORTA &= ~_BV(unwrapped_led);
+      PORTA &= ~_BV(wrapped_led);
+      PORTA &= ~_BV(prion_led);
+      PORTA &= ~_BV(porous_led);
+
+      PORTJ |= _BV(t134_led);
+      PORTK &= ~_BV(t121_led);
+    }
+    else if (test_sw == 2)
+    {
+      PORTA &= ~_BV(bnd_s__led);
+      PORTK |= _BV(vacuum_s_led);
+
+      PORTA &= ~_BV(unwrapped_led);
+      PORTA &= ~_BV(wrapped_led);
+      PORTA &= ~_BV(prion_led);
+      PORTA &= ~_BV(porous_led);
+
+      PORTJ &= ~_BV(t134_led);
+      PORTK |= _BV(t121_led);
+    }
+
+    else if (test_sw == 3)
+    {
+      PORTA |= _BV(bnd_s__led);
+      PORTK |= _BV(vacuum_s_led);
+
+      PORTA &= ~_BV(unwrapped_led);
+      PORTA &= ~_BV(wrapped_led);
+      PORTA &= ~_BV(prion_led);
+      PORTA &= ~_BV(porous_led);
+
+      PORTJ &= ~_BV(t134_led);
+      PORTK &= ~_BV(t121_led);
+    }
+  }
+}
+//
+// void get_btn_status()
+//{
+//
+//  if (!(PINL & (1 << 4)))
+//  {
+//
+//    //  // Serial1.print("PRGM BTN PRESSED :  ");
+//    //  // Serial1.println(prgrm_sw);
+//    if (prgrm_sw >= 5)
+//    {
+//      prgrm_sw = 1;
+//    }
+//
+//    else
+//    {
+//      prgrm_sw++;
+//    }
+//    test_sw = 0;
+//    delay(200);
+//  }
+//
+//  /********** Test program btn SWC *********************/
+//
+//  if (!(PINL & (1 << 6)))
+//  {
+//
+//    prgrm_sw = 0;
+//    if (test_sw >= 4)
+//    {
+//      test_sw = 1;
+//    }
+//
+//    else
+//    {
+//      test_sw++;
+//    }
+//
+//    delay(200);
+//
+//    Serial1.print("test PRGM BTN PRESSED :  ");
+//    Serial1.println(test_sw);
+//  }
+//}
