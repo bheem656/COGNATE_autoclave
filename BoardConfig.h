@@ -59,6 +59,7 @@
 /* SWITCH */
 #define SW_program  PORTL4 // program a
 #define SW_start  PORTL5 //start  b
+#define SW_start1  PORTK1 //start  63/A0
 #define SW_test  PORTL6 //test SW_start  c
 #define SW_D  PORTL7 //na
 
@@ -72,14 +73,30 @@ void Timer1_init(void);
 
 /* cycles */
 
-void preheating_unwrapped(void);
-void preheating_first_vaccume(void);
-void preheating_unwrapped(void);
-void preheating_unwrapped(void);
-void preheating_unwrapped(void);
-void preheating_unwrapped(void);
-void preheating_unwrapped(void);
-void preheating_unwrapped(void);
+// void preheating_unwrapped(void);
+// void preheating_first_vaccume(void);
+// void preheating_unwrapped(void);
+// void preheating_unwrapped(void);
+// void preheating_unwrapped(void);
+// void preheating_unwrapped(void);
+// void preheating_unwrapped(void);
+// void preheating_unwrapped(void);
+
+
+void unwrapped_cycle(void);
+void wrapped_cycle(void);
+void prion_cycle(void);
+void porous_cycle(void);
+void all_prgm_cycle(void);
+
+void bnd_test_cycle(void);
+void vaccume_test_cycle(void);
+void all_test_prgm_cycle(void);
+
+void status_led_glow(void);
+//void get_btn_status(void);
+
+
 
 
 
