@@ -6,7 +6,7 @@
 
 uint8_t dev = 2;
 
-uint8_t process_status;
+int8_t process_status;
 uint32_t cuurent_time;
 uint32_t last_time;
 volatile uint8_t RS;
@@ -38,8 +38,9 @@ void handleA0()
 
   // If interrupts come faster than 200ms, assume it's a bounce and ignore
   //   noInterrupts();
-  if ((interrupt_time - last_interrupt_time) > 400)
+  if ((interrupt_time - last_interrupt_time) > 700)
   {
+    Serial1.println("............A000000000000000000000000000000000 .............");
 
     RS = !RS;
   }
@@ -178,7 +179,7 @@ void setup()
   PcInt::attachInterrupt(63, handleA0);
 
   // attachInterrupt(digitalPinToInterrupt(2), ISR_door, CHANGE);        // door sensor
-  // attachInterrupt(digitalPinToInterrupt(3), ISR_water_fresh, CHANGE); // water sensor
+  attachInterrupt(digitalPinToInterrupt(3), ISR_water_fresh, CHANGE); // water sensor
   board_init();
   Disp_board_config();
   Timer1_init();
@@ -342,7 +343,7 @@ void loop()
     tmp4 = TS1();
     tmp3 = TS3();
 
-    if (tmp3 > 180 && tmp4 > 100)
+    if (tmp3 > 150 && tmp4 > 80)
     {
       process_status = 2;
     }
@@ -355,6 +356,7 @@ void loop()
 
     /************************  IF RS = 1 start running cycle ******************************/
     // process_status = 1;
+    // prgrm_sw = 1;
     while (RS)
     {
 
@@ -365,26 +367,31 @@ void loop()
         {
 
         case 1:
+        status_led_glow();
           Serial1.println("unwrapped_cycle");
           unwrapped_cycle();
           break;
 
         case 2:
+        status_led_glow();
           Serial1.println("wrapped_cycle");
           wrapped_cycle();
           break;
 
         case 3:
+        status_led_glow();
           Serial1.println("prion_cycle");
           // prion_cycle();
           break;
 
         case 4:
+        status_led_glow();
           Serial1.println("porous_cycle");
           // porous_cycle();
           break;
 
         case 5:
+        status_led_glow();
           Serial1.println("all_prgm_cycle");
           // all_prgm_cycle();
           break;
@@ -401,16 +408,19 @@ void loop()
         switch (test_sw)
         {
         case 1:
+        status_led_glow();
           Serial1.println("bnd_test_cycle");
           bnd_test_cycle();
           break;
 
         case 2:
+        status_led_glow();
           Serial1.println("vaccume_test_cycle");
           // vaccume_test_cycle();
           break;
 
         case 3:
+        status_led_glow();
           Serial1.println("all_test_prgm_cycle");
           // all_test_prgm_cycle();
           break;
@@ -422,7 +432,7 @@ void loop()
     }
   }
 
-  // delay(300);
+  delay(300);
 }
 
 /* check start stop */
