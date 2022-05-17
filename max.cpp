@@ -324,31 +324,31 @@ void maxTransfer(uint8_t address, uint8_t value, uint8_t device)
   if (device == 1)
   {
     SPI.beginTransaction(SPISettings(16000000, MSBFIRST, SPI_MODE3));
-//    digitalWrite(LOAD_PIN, LOW);
-     PORTB &= ~(1<<0);
+    //    digitalWrite(LOAD_PIN, LOW);
+    PORTB &= ~(1 << 0);
     SPI.transfer(address);
-//        SPI.transfer(0x00);
+    //        SPI.transfer(0x00);
     SPI.transfer(value);
-//    digitalWrite(LOAD_PIN, HIGH);
-     PORTB |= (1<<0);
+    //    digitalWrite(LOAD_PIN, HIGH);
+    PORTB |= (1 << 0);
     SPI.endTransaction();
   }
 
   else if (device == 2)
   {
     SPI.beginTransaction(SPISettings(16000000, MSBFIRST, SPI_MODE3));
-//    digitalWrite(LOAD_PIN, LOW);
-      PORTL &= ~(1<<5);
+    //    digitalWrite(LOAD_PIN, LOW);
+    PORTL &= ~(1 << 5);
     // uint16_t temp1,temp2 ;
-    
+
     SPI.transfer(address);
 
     SPI.transfer(value);
-//            SPI.transfer(0x00);
-//    SPI.transfer(0x00);
+    //            SPI.transfer(0x00);
+    //    SPI.transfer(0x00);
 
-//    digitalWrite(LOAD_PIN, HIGH);
-     PORTL |= (1<<5);
+    //    digitalWrite(LOAD_PIN, HIGH);
+    PORTL |= (1 << 5);
     SPI.endTransaction();
   }
 }
@@ -356,7 +356,68 @@ void maxTransfer(uint8_t address, uint8_t value, uint8_t device)
 void print_load()
 {
   set_char(1, 68, 2, false); // 68
-  set_char(2, 65, 2, false); // 65
+  set_char(2, 97, 2, false); // 65
   set_char(3, 79, 2, false); // 79
   set_char(4, 76, 2, false); // 76
+}
+
+void print_he(void)
+{
+  set_char(3, 72, 2, false); // 72 h
+  set_char(2, 69, 2, false); // 69 e
+}
+void print_ua(uint8_t number)
+{
+  set_char(3, 85, 2, false);     // 85 u
+  set_char(2, 65, 2, false);     // 65 a
+  set_char(1, number, 2, false); // 1
+}
+void print_pr(uint8_t number)
+{
+  set_char(3, 80, 2, false);     // 80 P
+  set_char(2, 82, 2, false);     // 62 R
+  set_char(1, number, 2, false); // 1
+}
+void print_st(void)
+{
+  set_char(3, 83, 2, false); // 83 s
+  set_char(2, 84, 2, false); // 84 t
+}
+void print_re(uint8_t number)
+{
+  set_char(3, 82, 2, false);     // 62 R
+  set_char(2, 69, 2, false);     // 69 e
+  set_char(1, number, 2, false); // 1
+}
+void print_RE(void)
+{
+  set_char(3, 82, 2, false); // 62 R
+  set_char(2, 69, 2, false); // 69 e
+  // set_char(1, number, dev, false); // 1
+}
+
+void print_dr(void)
+{
+  set_char(2, 82, 2, false); // 62 R
+  set_char(3, 68, 2, false); // 68 d
+
+}
+
+void show_time(uint8_t d4, uint8_t d3, uint8_t d2, uint8_t d1)
+{
+
+  set_char(4, d4, 2, false);
+  set_char(3, d3, 2, true);
+  set_char(2, d2, 2, false);
+  set_char(1, d1, 2, false);
+}
+
+void print_pass(void)
+{
+
+  set_char(4, 80, 2, false); // 80
+  set_char(3, 65, 2, false);  // 65
+  set_char(2, 115, 2, false);  //115
+  set_char(1, 115, 2, false);  //115
+
 }

@@ -173,4 +173,15 @@ void timer1_init(void);
 void print_load(void);
 // void lcd_init(void);
 
+void print_he(void);
+void print_ua(uint8_t);
+void print_pr(uint8_t);
+void print_st(void);
+void print_re(uint8_t);
+void print_RE(void);
+void print_dr(void);
+void print_pass(void);
+
+void show_time(uint8_t d4, uint8_t d3, uint8_t d2, uint8_t d1);
+
 #endif

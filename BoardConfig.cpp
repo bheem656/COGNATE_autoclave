@@ -76,7 +76,7 @@ void board_init(void)
   DDRH |= _BV(DDH4);
   DDRH |= _BV(DDH5);
   DDRC |= _BV(DDC4);
-  DDRC |= _BV(DDC6);
+  DDRC |= _BV(DDC5);
 
   // ALL LED
   DDRA |= 0xFF;
@@ -386,6 +386,55 @@ void status_led_glow()
     }
   }
 }
+
+
+void start_process_led_glow()
+{
+    PORTA |= _BV(start_led);
+    PORTK &= ~_BV(vacuum_led);
+    PORTK &= ~_BV(serilize_led);
+    PORTK &= ~_BV(dry_led);
+    PORTK &= ~_BV(end_led);
+}
+
+void vaccume_process_led_glow()
+{
+    PORTA &= ~_BV(start_led);
+    PORTK |= _BV(vacuum_led);
+    PORTK &= ~_BV(serilize_led);
+    PORTK &= ~_BV(dry_led);
+    PORTK &= ~_BV(end_led);
+}
+
+void sterilize_process_led_glow()
+{
+    PORTA &= ~_BV(start_led);
+    PORTK &= ~_BV(vacuum_led);
+    PORTK |= _BV(serilize_led);
+    PORTK &= ~_BV(dry_led);
+    PORTK &= ~_BV(end_led);
+}
+
+void dry_process_led_glow()
+{
+    PORTA &= ~_BV(start_led);
+    PORTK &= ~_BV(vacuum_led);
+    PORTK &= ~_BV(serilize_led);
+    PORTK |= _BV(dry_led);
+    PORTK &= ~_BV(end_led);
+}
+
+void end_process_led_glow()
+{
+
+    PORTA &= ~_BV(start_led);
+    PORTK &= ~_BV(vacuum_led);
+    PORTK &= ~_BV(serilize_led);
+    PORTK &= ~_BV(dry_led);
+    PORTK |= _BV(end_led);
+}
+
+
 //
 // void get_btn_status()
 //{
