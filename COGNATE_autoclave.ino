@@ -357,6 +357,7 @@ void loop()
     /************************  IF RS = 1 start running cycle ******************************/
     // process_status = 1;
     // prgrm_sw = 1;
+    RS = 1;
     while (RS)
     {
 
