@@ -716,7 +716,7 @@ void PR2_PROCESS(uint32_t duration)
         }
 
         /*******************  Break Condition *******************/
-        if (pressure > 217)
+        if (pressure > 222)
         {
             PORTJ &= ~_BV(v3);
             PORTJ &= ~_BV(v1);    // 1ST
@@ -1956,7 +1956,7 @@ void ST_PROCESS(uint32_t duration)
 
         /*******************  Break Condition *******************/
 
-        if (pressure < 230)
+        if (pressure < 222)
         {
 
             if (millis() - motor_time >= motor_off_time)
@@ -2287,4 +2287,145 @@ void DR_PROCESS(uint32_t duration)
 void PASS_PROCESS(void)
 {
     print_pass();
+}
+
+
+
+/****************************** common function *****************************************/
+void PR_PROCESS(uint32_t duration , uint16_t _pressure)
+{
+    _cuurent_time = millis();
+    _last_time = _cuurent_time;
+    motor_time = _cuurent_time;
+
+    /***************************  Run for duration time ********************/
+    curr_time = millis() - _cuurent_time;
+
+    while (curr_time < duration)
+    {
+
+        /******************  convert time  in minutes and seconds **********************/
+        curr_time = millis() - _cuurent_time;
+        mm_ = curr_time / 60000; // Total minutes
+        ss_ = curr_time % 60000; // Total seconds
+        ss_ = ss_ / 1000;
+
+        /********* Check if stop button pressed ******************/
+
+        if (!RS)
+        {
+            process_status = -1;
+            break;
+        }
+
+        /********* Display current cycle Status on 7-Segment ******************/
+        if (millis() - _last_time >= 5000)
+        {
+            _last_time = millis();
+            MAX7219_Clear(2);
+            while (millis() - _last_time < 700)
+            {
+                print_pr(1);
+            }
+
+            _last_time = millis();
+        }
+
+        /************ Show Time on 7-Segment *******************/
+
+        _m4 = mm_ / 10; // 4th digit
+        _m3 = mm_ % 10; // 3rd digit
+        _s2 = ss_ / 10; // 2nd digit
+        _s1 = ss_ % 10; // 1st digit
+
+        show_time(_m4, _m3, _s2, _s1);
+
+        /************ Get current Temp & Pressure *******************/
+        pressure = mpx();
+        outer_body_temp = TS1();
+        steam_generator_temp = TS3();
+
+        if (print_debug)
+        {
+
+            Serial1.print("current process running :");
+            Serial1.print(process_status);
+            // // Serial1.println("...HE...");
+
+            Serial1.print("pressure : ");
+            Serial1.print(pressure);
+            Serial1.println(" kPa");
+
+            Serial1.print("Outer Body :");
+            Serial1.println(outer_body_temp);
+
+            Serial1.print("Steam Generator : ");
+            Serial1.println(steam_generator_temp);
+
+            Serial1.println("....................... ");
+            Serial1.print("Time : ");
+            Serial1.print(mm_);
+            Serial1.print(" : "); // minutes
+            Serial1.println(ss_);
+        }
+
+        /*******************  Break Condition *******************/
+        if (pressure > _pressure)
+        {
+            PORTJ &= ~_BV(v3);
+            PORTJ &= ~_BV(v1);    // 1ST
+            PORTH &= ~_BV(motor); // 1ST // motor
+            break;
+        }
+
+        /*****************************  Valve Control **************************/
+        PORTJ |= _BV(v1);
+        PORTJ |= _BV(v3);
+        PORTJ |= _BV(v4);
+        /***********************  Relay control **********************/
+        // PORTH |= _BV(motor); // 1ST // motor motor_time
+        // delay(motor_on_time);
+        // PORTH &= ~_BV(motor); // 1ST // motor
+
+        if (millis() - motor_time >= motor_off_time)
+        {
+            motor_time = millis(); // load current time
+
+            /*********** turn on motor ****************/
+            while (millis() - motor_time < motor_on_time)
+            {
+                PORTH |= _BV(motor);
+            }
+            /*********** turn off motor ****************/
+            PORTH &= ~_BV(motor);
+            motor_time = millis();
+        }
+
+        /***********************************************************************/
+        if (steam_generator_temp >= max_steam_generator_temp)
+        {
+
+            PORTC &= ~_BV(steam);
+        }
+        else
+        {
+            PORTC |= _BV(steam);
+        }
+
+        /* Heat Ring */
+        if (outer_body_temp >= max_outer_body_temp)
+        {
+
+            PORTC &= ~_BV(heat);
+        }
+        else
+        {
+            PORTC |= _BV(heat);
+        }
+    }
+
+    /********* turn off all valve & Relay **********/
+    // PORTJ &= ~_BV(v3);
+    PORTJ &= ~_BV(v1);    // 1ST
+    PORTH &= ~_BV(motor); // 1ST // motor
 }
