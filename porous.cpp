@@ -38,13 +38,15 @@ void porous_cycle(void)
         _timeout = 157000; // 2:37
         Serial1.print(" current process :");
         Serial1.println(process_status);
-        UA1_PROCESS(_timeout);
+        // UA1_PROCESS(_timeout);
+         CUA_PROCESS(_timeout,-65,1);
         process_status = 3;
         break;
     case 3:
         vaccume_process_led_glow();
         _timeout = 348000; // 5:48
-        PR1_PROCESS(_timeout);
+        // PR1_PROCESS(_timeout);
+         CPR_PROCESS(_timeout,90,1);
         process_status = 4;
         break;
     case 4:
@@ -62,7 +64,8 @@ void porous_cycle(void)
     case 6:
         vaccume_process_led_glow();
         _timeout = 174000; // 2:54
-        PR2_PROCESS(_timeout);
+        // PR2_PROCESS(_timeout);
+         CPR_PROCESS(_timeout,90,2);
         process_status = 7;
         break;
 
@@ -81,19 +84,20 @@ void porous_cycle(void)
     case 9:
         vaccume_process_led_glow();
         _timeout = 317000; // 5:17
-        PR3_PROCESS(_timeout);
+        // PR3_PROCESS(_timeout);
+         CPR_PROCESS(_timeout,90,3);
         process_status = 10;
         break;
 
     case 10:
-        start_process_led_glow();
+        sterilize_process_led_glow();
         _timeout = 1200000; // 20:00
         ST_PROCESS(_timeout);
         process_status = 11;
         break;
 
     case 11:
-        start_process_led_glow();
+        sterilize_process_led_glow();
         _timeout = 36000; // 36 sec
         RE_PROCESS(_timeout);
         process_status = 12;

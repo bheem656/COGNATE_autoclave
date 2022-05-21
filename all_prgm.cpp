@@ -19,7 +19,7 @@ extern float tmp3;
 
 void all_prgm_cycle(void)
 {
-    uint16_t _timeout = 0;
+     uint32_t _timeout = 0;
 
     switch (process_status)
     {

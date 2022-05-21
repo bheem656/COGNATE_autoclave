@@ -90,6 +90,10 @@ void board_init(void)
   // PORTE |= _BV(PORTE4);
 }
 
+static uint8_t sample = 10;
+static uint8_t sample_time = 5;
+static uint32_t curr_time;
+
 float TS1(void)
 {
 
@@ -98,17 +102,23 @@ float TS1(void)
   float Rx11 = 0;
   float temp11 = 0;
 
-  for (int i = 0; i < 10; i++)
+   curr_time = millis();
+  for (int i = 0; i < sample; i++)
   {
     ts11 += analogRead(rtd2);
-    delay(5);
+
+    // while (millis() - curr_time <= sample_time)
+    // {
+    //   /* code */
+    // }
+    delay(10);
   }
 
-  ts11 /= 10;
+  ts11 /= sample;
   V11 = (ts11 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
   // // Serial1.print("VOLATAGE : ");
   // // Serial1.println(V11);
-  Rx11 = 1000 * ((2.18 * V11) / (5 - V11)); // 2.18
+  Rx11 = 1000 * ((2.17 * V11) / (5 - V11)); // 2.18
 
   // // Serial1.print("resistance : ");
   // // Serial1.println(Rx11);
@@ -141,18 +151,23 @@ float TS2(void)
   float Rx12 = 0;
   float temp12 = 0;
 
-  for (int i = 0; i < 10; i++)
+  curr_time = millis();
+  for (int i = 0; i < sample; i++)
   {
     ts12 += analogRead(rtd3);
-    delay(5);
+    // while (millis() - curr_time <= sample_time)
+    // {
+    //   /* code */
+    // }
+    delay(10);
   }
 
-  ts12 /= 10;
+  ts12 /= sample;
   V12 = (ts12 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
   //     // Serial1.print("VOLATAGE : ");
   // // Serial1.println(V12);
 
-  Rx12 = 1000 * ((2.19 * V12) / (5 - V12));
+  Rx12 = 1000 * ((2.17 * V12) / (5 - V12));
   // // Serial1.print("resistance : ");
   // // Serial1.println(Rx12);
 
@@ -183,17 +198,24 @@ float TS3(void)
   float Rx1;
   float temp1, temp;
   float ts1 = 0;
-  for (int i = 0; i < 10; i++)
+
+  curr_time = millis();
+  for (int i = 0; i < sample; i++)
   {
     ts1 += analogRead(rtd5);
-    delay(5);
+    // while (millis() - curr_time <= sample_time)
+    // {
+    //   /* code */
+    // }
+
+    delay(10);
   }
 
-  ts1 /= 10;
+  ts1 /= sample;
   V1 = (ts1 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
   // // Serial1.print("VOLATAGE : ");
   // // Serial1.println(V1);
-  Rx1 = 1000 * ((2.18 * V1) / (5 - V1));
+  Rx1 = 1000 * ((2.17 * V1) / (5 - V1));
 
   // // Serial1.print("resistance : ");
   // // Serial1.println(Rx1);
@@ -220,10 +242,25 @@ float TS3(void)
 float mpx(void)
 {
 
-  int offset = 126;
+  float offset = 127.5;
+  curr_time = millis();
 
-  int raw = analogRead(A4); // Reads the MAP sensor raw value on analog port 0
+  int raw = 0;
 
+  // for (int i = 0; i < sample; i++)
+  // {
+  //   raw += analogRead(A4);
+  //   while (millis() - curr_time <= sample_time)
+  //   {
+  //     /* code */
+  //   }
+
+  //   // delay(5);
+  // }
+
+  raw = analogRead(A4); // Reads the MAP sensor raw value on analog port 0
+
+  // raw /= sample;
   float voltage = raw * 0.004887586; // let the compiler determine how many digits it can handle
   float pressure = 0.0;
 
@@ -387,53 +424,51 @@ void status_led_glow()
   }
 }
 
-
 void start_process_led_glow()
 {
-    PORTA |= _BV(start_led);
-    PORTK &= ~_BV(vacuum_led);
-    PORTK &= ~_BV(serilize_led);
-    PORTK &= ~_BV(dry_led);
-    PORTK &= ~_BV(end_led);
+  PORTA |= _BV(start_led);
+  PORTK &= ~_BV(vacuum_led);
+  PORTK &= ~_BV(serilize_led);
+  PORTK &= ~_BV(dry_led);
+  PORTK &= ~_BV(end_led);
 }
 
 void vaccume_process_led_glow()
 {
-    PORTA &= ~_BV(start_led);
-    PORTK |= _BV(vacuum_led);
-    PORTK &= ~_BV(serilize_led);
-    PORTK &= ~_BV(dry_led);
-    PORTK &= ~_BV(end_led);
+  PORTA &= ~_BV(start_led);
+  PORTK |= _BV(vacuum_led);
+  PORTK &= ~_BV(serilize_led);
+  PORTK &= ~_BV(dry_led);
+  PORTK &= ~_BV(end_led);
 }
 
 void sterilize_process_led_glow()
 {
-    PORTA &= ~_BV(start_led);
-    PORTK &= ~_BV(vacuum_led);
-    PORTK |= _BV(serilize_led);
-    PORTK &= ~_BV(dry_led);
-    PORTK &= ~_BV(end_led);
+  PORTA &= ~_BV(start_led);
+  PORTK &= ~_BV(vacuum_led);
+  PORTK |= _BV(serilize_led);
+  PORTK &= ~_BV(dry_led);
+  PORTK &= ~_BV(end_led);
 }
 
 void dry_process_led_glow()
 {
-    PORTA &= ~_BV(start_led);
-    PORTK &= ~_BV(vacuum_led);
-    PORTK &= ~_BV(serilize_led);
-    PORTK |= _BV(dry_led);
-    PORTK &= ~_BV(end_led);
+  PORTA &= ~_BV(start_led);
+  PORTK &= ~_BV(vacuum_led);
+  PORTK &= ~_BV(serilize_led);
+  PORTK |= _BV(dry_led);
+  PORTK &= ~_BV(end_led);
 }
 
 void end_process_led_glow()
 {
 
-    PORTA &= ~_BV(start_led);
-    PORTK &= ~_BV(vacuum_led);
-    PORTK &= ~_BV(serilize_led);
-    PORTK &= ~_BV(dry_led);
-    PORTK |= _BV(end_led);
+  PORTA &= ~_BV(start_led);
+  PORTK &= ~_BV(vacuum_led);
+  PORTK &= ~_BV(serilize_led);
+  PORTK &= ~_BV(dry_led);
+  PORTK |= _BV(end_led);
 }
-
 
 //
 // void get_btn_status()

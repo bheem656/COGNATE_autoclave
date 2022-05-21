@@ -36,10 +36,11 @@ void unwrapped_cycle(void)
             break;
         case 2:
             vaccume_process_led_glow();
-            _timeout = 220000;  // 3:40 220000
+            _timeout = 220000; // 3:40 220000
             Serial1.print(" current process :");
             Serial1.println(process_status);
-            UA1_PROCESS(_timeout);
+            CUA_PROCESS(_timeout,-80,1);
+            // UA1_PROCESS(_timeout);
             process_status = 3;
             break;
         case 3:
@@ -47,28 +48,31 @@ void unwrapped_cycle(void)
             _timeout = 670000; // 7:25 670000
             Serial1.print(" current process :");
             Serial1.println(process_status);
-            PR1_PROCESS(_timeout);
+            // PR1_PROCESS(_timeout);
+            CPR_PROCESS(_timeout,150,1);
             process_status = 4;
             break;
         case 4:
             vaccume_process_led_glow();
-             _timeout = 45000; // 45sec
+            _timeout = 45000; // 45sec
             Serial1.print(" current process :");
             Serial1.println(process_status);
-            RE1_PROCESS(_timeout);
+            CRE_PROCESS(_timeout,1);
+            // RE1_PROCESS(_timeout);
             process_status = 5;
             break;
         case 5:
             vaccume_process_led_glow();
-             _timeout = 390000;// 6:30  390000
+            _timeout = 390000; // 6:30  390000
             Serial1.print(" current process :");
             Serial1.println(process_status);
-            PR2_PROCESS(_timeout);
+            CPR_PROCESS(_timeout,218,2);
+            // PR2_PROCESS(_timeout);
             process_status = 6;
             break;
         case 6:
             sterilize_process_led_glow();
-             _timeout = 240000; // 4:00
+            _timeout = 240000; // 4:00
             Serial1.print(" current process :");
             Serial1.println(process_status);
             ST_PROCESS(_timeout);
@@ -77,7 +81,7 @@ void unwrapped_cycle(void)
 
         case 7:
             sterilize_process_led_glow();
-             _timeout = 45000; // 45 sec
+            _timeout = 45000; // 45 sec
             Serial1.print(" current process :");
             Serial1.println(process_status);
             RE_PROCESS(_timeout);

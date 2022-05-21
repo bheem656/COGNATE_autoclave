@@ -6,6 +6,9 @@
 
 uint8_t dev = 2;
 
+uint8_t bypass_temp_SG = 150;
+uint8_t bypass_temp_RING = 100;
+
 int8_t process_status;
 uint32_t cuurent_time;
 uint32_t last_time;
@@ -38,12 +41,13 @@ void handleA0()
 
   // If interrupts come faster than 200ms, assume it's a bounce and ignore
   //   noInterrupts();
-  if ((interrupt_time - last_interrupt_time) > 700)
+  if ((interrupt_time - last_interrupt_time) > 2000)
   {
     Serial1.println("............A000000000000000000000000000000000 .............");
 
     RS = !RS;
   }
+  Serial1.print("Intrupt generated ###########################3");
   last_interrupt_time = interrupt_time;
 }
 
@@ -53,11 +57,11 @@ ISR(TIMER1_OVF_vect)
 {
 
   count++;
-  if (count >= 40)
+  if (count >= 200)
   {
     count = 0;
     _pres = mpx();
-    _temp = TS2();
+    _temp = TS2() - 4;
     lcd1_temp(_temp);
     lcd2_press(_pres);
     TIFR1 |= 0x01;
@@ -185,34 +189,47 @@ void setup()
   Timer1_init();
   //  MAX7219_Clear(1);
   //  MAX7219_Clear(2);
-   print_load();
+  print_load();
 
   PORTH |= _BV(fan);
 
-  // PORTJ |= _BV(v2);
+  PORTJ |= _BV(v2);
+  PORTJ |= _BV(v3);
+  PORTJ |= _BV(v4);
+
+  float pr = 0;
+   pr = mpx();
+ while (pr < -3)
+ {
+   pr = mpx();
+   Serial1.print("..");
+ }
+ Serial1.println("ready to go");
+
+  PORTJ &= ~ _BV(v2);
+  PORTJ &= ~ _BV(v3);
+  PORTJ &= ~ _BV(v4);
 
 }
 
 void loop()
 {
 
-// delay(1000);
-// if (!(PINE & (1 << 4)))
-// {
+  // delay(1000);
+  // if (!(PINE & (1 << 4)))
+  // {
 
-// door_status = 1;
-// Serial1.print("..................."); // get from intrupt
-//   // Serial1.println(door_status);
+  // door_status = 1;
+  // Serial1.print("..................."); // get from intrupt
+  //   // Serial1.println(door_status);
 
+  // }
 
-// }
+  // else
+  // {
+  // door_status = 1;
 
-// else
-// {
-// door_status = 1;
-
-// }
-
+  // }
 
   if (PINE & (1 << 5))
   {
@@ -225,7 +242,6 @@ void loop()
     PORTA &= ~_BV(water_status_led);
     fresh = 0;
   }
-
 
   Serial1.println("............................................................"); // get from intrupt
 
@@ -326,24 +342,21 @@ void loop()
 
     delay(300);
 
-    if ((drain == 0) && (fresh == 0)) // && (door_status == 1)
-    {
-      RS = 1;
-      Serial1.println("TRIGGER ...................");
-    }
-    else
+    if ((drain == 1) || (fresh == 1)) // && (door_status == 1)
     {
       RS = 0;
+      // Serial1.println("TRIGGER ...................");
       Serial1.println("PLEASE CLOSE THE DOOR");
     }
+
     /*************
      * Get Temp & Pressure to  skip pre heating cycle *******
      * ********/
 
-    tmp4 = TS1();
-    tmp3 = TS3();
+    tmp4 = TS1();  // OUTER BODY
+    tmp3 = TS3(); // STEAM G
 
-    if (tmp3 > 150 && tmp4 > 80)
+    if (tmp3 > bypass_temp_SG || tmp4 > bypass_temp_RING)
     {
       process_status = 2;
     }
@@ -357,7 +370,7 @@ void loop()
     /************************  IF RS = 1 start running cycle ******************************/
     // process_status = 1;
     // prgrm_sw = 1;
-    RS = 1;
+    // RS = 1;
     while (RS)
     {
 
@@ -368,33 +381,33 @@ void loop()
         {
 
         case 1:
-        status_led_glow();
+          status_led_glow();
           Serial1.println("unwrapped_cycle");
           unwrapped_cycle();
           break;
 
         case 2:
-        status_led_glow();
+          status_led_glow();
           Serial1.println("wrapped_cycle");
           wrapped_cycle();
           break;
-
+ 
         case 3:
-        status_led_glow();
+          status_led_glow();
           Serial1.println("prion_cycle");
-          // prion_cycle();
+          prion_cycle();
           break;
 
         case 4:
-        status_led_glow();
+          status_led_glow();
           Serial1.println("porous_cycle");
-          // porous_cycle();
+          porous_cycle();
           break;
 
         case 5:
-        status_led_glow();
+          status_led_glow();
           Serial1.println("all_prgm_cycle");
-          // all_prgm_cycle();
+          all_prgm_cycle();
           break;
 
         default:
@@ -409,21 +422,21 @@ void loop()
         switch (test_sw)
         {
         case 1:
-        status_led_glow();
+          status_led_glow();
           Serial1.println("bnd_test_cycle");
           bnd_test_cycle();
           break;
 
         case 2:
-        status_led_glow();
+          status_led_glow();
           Serial1.println("vaccume_test_cycle");
           // vaccume_test_cycle();
           break;
 
         case 3:
-        status_led_glow();
+          status_led_glow();
           Serial1.println("all_test_prgm_cycle");
-          // all_test_prgm_cycle();
+          all_test_prgm_cycle();
           break;
 
         default:

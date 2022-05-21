@@ -19,7 +19,8 @@ extern float tmp3;
 
 void bnd_test_cycle(void)
 {
-    uint16_t _timeout = 0;
+    uint32_t _timeout = 0;
+    
     switch (process_status)
     {
     case 1:
@@ -83,14 +84,14 @@ void bnd_test_cycle(void)
         break;
 
     case 10:
-        start_process_led_glow();
+        sterilize_process_led_glow();
         _timeout = 240000; // 4:00
         ST_PROCESS(_timeout);
         process_status = 11;
         break;
 
     case 11:
-        start_process_led_glow();
+        sterilize_process_led_glow();
         _timeout = 45000; // 45 sec
         RE_PROCESS(_timeout);
         process_status = 12;

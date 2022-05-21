@@ -14,9 +14,10 @@ float pressure;
 
 /************** temp cut off  condition ******************/
 uint8_t max_steam_generator_temp = 180;
-uint8_t max_outer_body_temp = 120;
-uint16_t motor_on_time = 80;
+uint8_t max_outer_body_temp = 90;
+uint16_t motor_on_time = 160; // 150 fine
 uint16_t motor_off_time = 2000;
+uint16_t _stTemp = 223;
 /***************  variable for display time on 7-segment *******************/
 uint32_t _cuurent_time;
 uint32_t curr_time;
@@ -57,6 +58,7 @@ void HE_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -165,6 +167,7 @@ void UA1_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -262,7 +265,7 @@ void UA1_PROCESS(uint32_t duration)
 }
 
 /***************  PR1_PROCESS  *******************/
- /********  V1 + MOTOR + V3 + STEAM +  STRAT FROM 00:00 + END AT 150 KPA **********/
+/********  V1 + MOTOR + V3 + STEAM +  STRAT FROM 00:00 + END AT 150 KPA **********/
 
 void PR1_PROCESS(uint32_t duration)
 {
@@ -286,6 +289,7 @@ void PR1_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -402,8 +406,8 @@ void PR1_PROCESS(uint32_t duration)
     PORTH &= ~_BV(motor); // 1ST // motor
 }
 
-      /********  RE1 **********/
-            /********  V2 +  STRAT FROM 00:00 + END AT 45 SEC **********/
+/********  RE1 **********/
+/********  V2 +  STRAT FROM 00:00 + END AT 45 SEC **********/
 void RE1_PROCESS(uint32_t duration)
 {
     _cuurent_time = millis();
@@ -426,6 +430,7 @@ void RE1_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -545,6 +550,7 @@ void UA2_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -640,7 +646,7 @@ void UA2_PROCESS(uint32_t duration)
 }
 void PR2_PROCESS(uint32_t duration)
 {
-      _cuurent_time = millis();
+    _cuurent_time = millis();
     _last_time = _cuurent_time;
     motor_time = _cuurent_time;
 
@@ -660,6 +666,7 @@ void PR2_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -797,6 +804,7 @@ void RE2_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -912,6 +920,7 @@ void UA3_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -1007,7 +1016,7 @@ void UA3_PROCESS(uint32_t duration)
 }
 void PR3_PROCESS(uint32_t duration)
 {
-      _cuurent_time = millis();
+    _cuurent_time = millis();
     _last_time = _cuurent_time;
     motor_time = _cuurent_time;
 
@@ -1027,6 +1036,7 @@ void PR3_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -1164,6 +1174,7 @@ void RE3_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -1279,6 +1290,7 @@ void UA4_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -1394,6 +1406,7 @@ void PR4_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -1531,6 +1544,7 @@ void RE4_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -1646,6 +1660,7 @@ void UA5_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -1741,7 +1756,7 @@ void UA5_PROCESS(uint32_t duration)
 }
 void PR5_PROCESS(uint32_t duration)
 {
-     _cuurent_time = millis();
+    _cuurent_time = millis();
     _last_time = _cuurent_time;
     motor_time = _cuurent_time;
 
@@ -1761,6 +1776,7 @@ void PR5_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -1899,6 +1915,7 @@ void ST_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -1956,7 +1973,7 @@ void ST_PROCESS(uint32_t duration)
 
         /*******************  Break Condition *******************/
 
-        if (pressure < 222)
+        if (pressure < _stTemp)
         {
 
             if (millis() - motor_time >= motor_off_time)
@@ -1964,7 +1981,7 @@ void ST_PROCESS(uint32_t duration)
                 motor_time = millis(); // load current time
 
                 /*********** turn on motor ****************/
-                while (millis() - motor_time < motor_on_time)
+                while (millis() - motor_time < 80) //motor_on_time
                 {
                     PORTH |= _BV(motor);
                 }
@@ -2010,7 +2027,7 @@ void ST_PROCESS(uint32_t duration)
 
 void RE_PROCESS(uint32_t duration)
 {
-     _cuurent_time = millis();
+    _cuurent_time = millis();
     _last_time = _cuurent_time;
     motor_time = _cuurent_time;
 
@@ -2030,6 +2047,7 @@ void RE_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -2149,6 +2167,7 @@ void DR_PROCESS(uint32_t duration)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -2289,11 +2308,15 @@ void PASS_PROCESS(void)
     print_pass();
 }
 
-
-
 /****************************** common function *****************************************/
-void PR_PROCESS(uint32_t duration , uint16_t _pressure)
+
+void CRE_PROCESS(uint32_t duration, uint8_t process_num)
 {
+
+    PORTJ &= ~_BV(v2);
+    PORTJ &= ~_BV(v3);
+    PORTJ &= ~_BV(v4);
+
     _cuurent_time = millis();
     _last_time = _cuurent_time;
     motor_time = _cuurent_time;
@@ -2314,6 +2337,7 @@ void PR_PROCESS(uint32_t duration , uint16_t _pressure)
 
         if (!RS)
         {
+            Serial1.print("Intrupt generated");
             process_status = -1;
             break;
         }
@@ -2325,7 +2349,265 @@ void PR_PROCESS(uint32_t duration , uint16_t _pressure)
             MAX7219_Clear(2);
             while (millis() - _last_time < 700)
             {
-                print_pr(1);
+                print_re(process_num);
+            }
+
+            _last_time = millis();
+        }
+
+        /************ Show Time on 7-Segment *******************/
+
+        _m4 = mm_ / 10; // 4th digit
+        _m3 = mm_ % 10; // 3rd digit
+        _s2 = ss_ / 10; // 2nd digit
+        _s1 = ss_ % 10; // 1st digit
+
+        show_time(_m4, _m3, _s2, _s1);
+
+        /************ Get current Temp & Pressure *******************/
+        pressure = mpx();
+        outer_body_temp = TS1();
+        steam_generator_temp = TS3();
+
+        if (print_debug)
+        {
+
+            Serial1.print("current process running :");
+            Serial1.print(process_status);
+            // // Serial1.println("...HE...");
+
+            Serial1.print("pressure : ");
+            Serial1.print(pressure);
+            Serial1.println(" kPa");
+
+            Serial1.print("Outer Body :");
+            Serial1.println(outer_body_temp);
+
+            Serial1.print("Steam Generator : ");
+            Serial1.println(steam_generator_temp);
+
+            Serial1.println("....................... ");
+            Serial1.print("Time : ");
+            Serial1.print(mm_);
+            Serial1.print(" : "); // minutes
+            Serial1.println(ss_);
+        }
+
+        /*******************  Break Condition *******************/
+        // if (pressure > 150)
+        // {
+        //     PORTJ &= ~_BV(v2);
+        //     break;
+        // }
+
+        /*****************************  Valve Control **************************/
+        // PORTJ |= _BV(v2);
+
+        PORTJ &= ~_BV(v3);
+        PORTJ &= ~_BV(v4);
+        /***********************  Relay control **********************/
+
+        /***********************************************************************/
+        if (steam_generator_temp >= max_steam_generator_temp)
+        {
+
+            PORTC &= ~_BV(steam);
+        }
+        else
+        {
+            PORTC |= _BV(steam);
+        }
+
+        /* Heat Ring */
+        if (outer_body_temp >= max_outer_body_temp)
+        {
+
+            PORTC &= ~_BV(heat);
+        }
+        else
+        {
+            PORTC |= _BV(heat);
+        }
+    }
+
+    /********* turn off all valve & Relay **********/
+    // PORTJ |= _BV(v3);
+    // PORTJ |= _BV(v4);
+}
+
+void CUA_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
+{
+
+    PORTJ &= ~_BV(v3);
+    PORTJ &= ~_BV(v1);
+    PORTJ &= ~_BV(v2);
+
+    Serial1.print(" duration :");
+    Serial1.println(duration);
+
+    _cuurent_time = millis();
+    _last_time = _cuurent_time;
+
+    /***************************  Run for duration time ********************/
+    curr_time = millis() - _cuurent_time;
+
+    while (curr_time < duration)
+    {
+
+        /******************  convert time  in minutes and seconds **********************/
+        curr_time = millis() - _cuurent_time;
+        rev_time = duration - curr_time;
+        mm_ = rev_time / 60000; // Total minutes
+        ss_ = rev_time % 60000; // Total seconds
+        ss_ = ss_ / 1000;
+
+        /********* Check if stop button pressed ******************/
+
+        if (!RS)
+        {
+            Serial1.print("Intrupt generated");
+            process_status = -1;
+            break;
+        }
+
+        /********* Display current cycle Status on 7-Segment ******************/
+        if (millis() - _last_time >= 5000)
+        {
+            _last_time = millis();
+            MAX7219_Clear(2);
+            while (millis() - _last_time < 700)
+            {
+                print_ua(process_num);
+            }
+
+            _last_time = millis();
+        }
+
+        /************ Show Time on 7-Segment *******************/
+
+        _m4 = mm_ / 10; // 4th digit
+        _m3 = mm_ % 10; // 3rd digit
+        _s2 = ss_ / 10; // 2nd digit
+        _s1 = ss_ % 10; // 1st digit
+
+        show_time(_m4, _m3, _s2, _s1);
+
+        /************ Get current Temp & Pressure *******************/
+        pressure = mpx();
+        outer_body_temp = TS1();
+        steam_generator_temp = TS3();
+
+        if (print_debug)
+        {
+
+            Serial1.print("current process running :");
+            Serial1.print(process_status);
+            // Serial1.println("...HE...");
+
+            Serial1.print("pressure : ");
+            Serial1.print(pressure);
+            Serial1.println(" kPa");
+
+            Serial1.print("Outer Body :");
+            Serial1.println(outer_body_temp);
+
+            Serial1.print("Steam Generator : ");
+            Serial1.println(steam_generator_temp);
+
+            Serial1.println("....................... ");
+            Serial1.print("Time : ");
+            Serial1.print(mm_);
+            Serial1.print(" : "); // minutes
+            Serial1.println(ss_);
+        }
+
+        /*******************  Break Condition *******************/
+        if (pressure < _pressure)
+        {
+            PORTH &= ~_BV(vac);
+            PORTJ &= ~_BV(v4);
+            break;
+        }
+
+        /*****************************  Valve Control **************************/
+        PORTH |= _BV(vac); // vaccume pump on
+        PORTJ |= _BV(v4);  // 4th valve on
+        /***********************  Relay control **********************/
+
+        /********************************************************************/
+        if (steam_generator_temp >= max_steam_generator_temp)
+        {
+
+            PORTC &= ~_BV(steam);
+        }
+        else
+        {
+            PORTC |= _BV(steam);
+        }
+
+        /* Heat Ring */
+        if (outer_body_temp >= max_outer_body_temp)
+        {
+
+            PORTC &= ~_BV(heat);
+        }
+        else
+        {
+            PORTC |= _BV(heat);
+        }
+    }
+
+    /********* turn off all valve & Relay **********/
+    PORTH &= ~_BV(vac);
+    // PORTJ &= ~_BV(v4);
+}
+
+void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
+{
+
+    PORTJ &= ~_BV(v2);
+
+    _cuurent_time = millis();
+    _last_time = _cuurent_time;
+    motor_time = _cuurent_time;
+
+    /***************************  Run for duration time ********************/
+    curr_time = millis() - _cuurent_time;
+
+    pressure = mpx();
+    delay(100);
+    while (pressure <= _pressure)
+    {
+
+        // if (curr_time > 600)
+        // {
+        //     Serial1.println("error");
+        //     break;
+        // }
+
+        /******************  convert time  in minutes and seconds **********************/
+        curr_time = millis() - _cuurent_time;
+        mm_ = curr_time / 60000; // Total minutes
+        ss_ = curr_time % 60000; // Total seconds
+        ss_ = ss_ / 1000;
+
+        /********* Check if stop button pressed ******************/
+
+        if (!RS)
+        {
+            Serial1.print("Intrupt generated");
+            process_status = -1;
+            break;
+        }
+
+        /********* Display current cycle Status on 7-Segment ******************/
+        if (millis() - _last_time >= 5000)
+        {
+            _last_time = millis();
+            MAX7219_Clear(2);
+            while (millis() - _last_time < 700)
+            {
+                print_pr(process_num);
             }
 
             _last_time = millis();
@@ -2372,7 +2654,7 @@ void PR_PROCESS(uint32_t duration , uint16_t _pressure)
         /*******************  Break Condition *******************/
         if (pressure > _pressure)
         {
-            PORTJ &= ~_BV(v3);
+            // PORTJ &= ~_BV(v3);
             PORTJ &= ~_BV(v1);    // 1ST
             PORTH &= ~_BV(motor); // 1ST // motor
             break;

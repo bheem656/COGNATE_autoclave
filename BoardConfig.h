@@ -108,7 +108,9 @@ void DR_PROCESS(uint32_t duration);
 void PASS_PROCESS(void);
 // void verify_process(void);
 
-void PR_PROCESS(uint32_t duration , uint16_t _pressure);
+void CPR_PROCESS(uint32_t duration , int16_t _pressure, uint8_t process_num);
+void CUA_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num);
+void CRE_PROCESS(uint32_t duration, uint8_t process_num);
 
 /*********** running prgram led  status methods ************/
 void start_process_led_glow(void);
