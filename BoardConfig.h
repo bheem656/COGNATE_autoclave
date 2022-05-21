@@ -101,10 +101,13 @@ void RE4_PROCESS(uint32_t duration);
 void UA5_PROCESS(uint32_t duration);
 void PR5_PROCESS(uint32_t duration);
 
-void ST_PROCESS(uint32_t duration);
+// void ST_PROCESS(uint32_t duration);
+void ST_PROCESS(uint32_t duration, uint32_t _prr );
 
 void RE_PROCESS(uint32_t duration);
 void DR_PROCESS(uint32_t duration);
+void DR_porous_PROCESS(uint32_t duration);
+void DR_all_prgm_PROCESS(uint32_t duration);
 void PASS_PROCESS(void);
 // void verify_process(void);
 

@@ -97,7 +97,8 @@ void prion_cycle(void)
     case 10:
         sterilize_process_led_glow();
         _timeout = 1080000; // 18:00
-        ST_PROCESS(_timeout);
+        ST_PROCESS(_timeout,222);
+        // ST_PROCESS(_timeout);
         process_status = 11;
         break;
 

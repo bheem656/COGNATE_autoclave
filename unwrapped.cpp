@@ -75,7 +75,7 @@ void unwrapped_cycle(void)
             _timeout = 240000; // 4:00
             Serial1.print(" current process :");
             Serial1.println(process_status);
-            ST_PROCESS(_timeout);
+            ST_PROCESS(_timeout,222);
             process_status = 7;
             break;
 

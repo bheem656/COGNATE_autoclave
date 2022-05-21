@@ -57,11 +57,11 @@ ISR(TIMER1_OVF_vect)
 {
 
   count++;
-  if (count >= 200)
+  if (count >= 120)
   {
     count = 0;
     _pres = mpx();
-    _temp = TS2() - 4;
+    _temp = TS2() - 4.5;
     lcd1_temp(_temp);
     lcd2_press(_pres);
     TIFR1 |= 0x01;
@@ -194,21 +194,22 @@ void setup()
   PORTH |= _BV(fan);
 
   PORTJ |= _BV(v2);
-  PORTJ |= _BV(v3);
-  PORTJ |= _BV(v4);
+  // PORTJ |= _BV(v3);
+  // PORTJ |= _BV(v4);
 
-  float pr = 0;
-   pr = mpx();
- while (pr < -3)
- {
-   pr = mpx();
-   Serial1.print("..");
- }
- Serial1.println("ready to go");
+delay(3000);
+//   float pr = 0;
+//    pr = mpx();
+//  while (pr < -3)
+//  {
+//    pr = mpx();
+//    Serial1.print("..");
+//  }
+//  Serial1.println("ready to go");
 
   PORTJ &= ~ _BV(v2);
-  PORTJ &= ~ _BV(v3);
-  PORTJ &= ~ _BV(v4);
+  // PORTJ &= ~ _BV(v3);
+  // PORTJ &= ~ _BV(v4);
 
 }
 

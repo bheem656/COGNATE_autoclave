@@ -101,7 +101,8 @@ void wrapped_cycle(void)
     case 10:
         sterilize_process_led_glow();
         _timeout = 300000; // 5:00
-        ST_PROCESS(_timeout); // 218 KPA
+        ST_PROCESS(_timeout,222);
+        // ST_PROCESS(_timeout); // 218 KPA
         process_status = 11;
         break;
 
