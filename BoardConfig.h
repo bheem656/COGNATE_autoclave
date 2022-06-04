@@ -82,24 +82,24 @@ enum sub_cycle
 
 /***********  program cycle process methods ************/
 void HE_PROCESS(uint32_t duration);
-void UA1_PROCESS(uint32_t duration );
-void PR1_PROCESS(uint32_t duration);
-void RE1_PROCESS(uint32_t duration);
+// void UA1_PROCESS(uint32_t duration );
+// void PR1_PROCESS(uint32_t duration);
+// void RE1_PROCESS(uint32_t duration);
 
-void UA2_PROCESS(uint32_t duration);
-void PR2_PROCESS(uint32_t duration);
-void RE2_PROCESS(uint32_t duration);
+// void UA2_PROCESS(uint32_t duration);
+// void PR2_PROCESS(uint32_t duration);
+// void RE2_PROCESS(uint32_t duration);
 
-void UA3_PROCESS(uint32_t duration);
-void PR3_PROCESS(uint32_t duration);
-void RE3_PROCESS(uint32_t duration);
+// void UA3_PROCESS(uint32_t duration);
+// void PR3_PROCESS(uint32_t duration);
+// void RE3_PROCESS(uint32_t duration);
 
-void UA4_PROCESS(uint32_t duration);
-void PR4_PROCESS(uint32_t duration);
-void RE4_PROCESS(uint32_t duration);
+// void UA4_PROCESS(uint32_t duration);
+// void PR4_PROCESS(uint32_t duration);
+// void RE4_PROCESS(uint32_t duration);
 
-void UA5_PROCESS(uint32_t duration);
-void PR5_PROCESS(uint32_t duration);
+// void UA5_PROCESS(uint32_t duration);
+// void PR5_PROCESS(uint32_t duration);
 
 // void ST_PROCESS(uint32_t duration);
 void ST_PROCESS(uint32_t duration, uint32_t _prr );
@@ -108,6 +108,7 @@ void RE_PROCESS(uint32_t duration);
 void DR_PROCESS(uint32_t duration);
 void DR_porous_PROCESS(uint32_t duration);
 void DR_all_prgm_PROCESS(uint32_t duration);
+void DR_bnd_PROCESS(uint32_t duration);
 void PASS_PROCESS(void);
 // void verify_process(void);
 
@@ -139,6 +140,10 @@ void VACCUME_PROCESS(void);
 void STEADY_PROCESS(void);
 void TESTING_PROCESS(void);
 void VAC_PASS_PROCESS(void);
+
+
+void first_all_test_process(void);
+void second_all_test_process(void);
 
 /***********  program select  led status method ************/
 void status_led_glow(void);

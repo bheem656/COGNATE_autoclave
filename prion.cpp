@@ -5,6 +5,7 @@
 
 // #define debug 1
 extern uint8_t dev;
+// extern uint8_t RS;
 
 extern uint8_t process_status;
 extern uint32_t cuurent_time;
@@ -38,35 +39,35 @@ void prion_cycle(void)
         _timeout = 160000; // 2:40
         Serial1.print(" current process :");
         Serial1.println(process_status);
-        CUA_PROCESS(_timeout,-80,1);
+        CUA_PROCESS(_timeout, -80, 1);
         // UA1_PROCESS(_timeout);
         process_status = 3;
         break;
     case 3:
         vaccume_process_led_glow();
         _timeout = 270000; // 4:30
-        CPR_PROCESS(_timeout,90,1);
+        CPR_PROCESS(_timeout, 90, 1);
         // PR1_PROCESS(_timeout);
         process_status = 4;
         break;
     case 4:
         vaccume_process_led_glow();
         _timeout = 40000; // 40 sec
-        CRE_PROCESS(_timeout,1);
+        CRE_PROCESS(_timeout, 1);
         // RE1_PROCESS(_timeout);
         process_status = 5;
         break;
     case 5:
         vaccume_process_led_glow();
         _timeout = 140000; // 2:20
-        CUA_PROCESS(_timeout,-65,2);
+        CUA_PROCESS(_timeout, -65, 2);
         // UA2_PROCESS(_timeout);
         process_status = 6;
         break;
     case 6:
         vaccume_process_led_glow();
         _timeout = 15000; // 2:30
-        CPR_PROCESS(_timeout,60,2);
+        CPR_PROCESS(_timeout, 60, 2);
         // PR2_PROCESS(_timeout);
         process_status = 7;
         break;
@@ -74,21 +75,21 @@ void prion_cycle(void)
     case 7:
         vaccume_process_led_glow();
         _timeout = 30000; // 30 sec
-        CRE_PROCESS(_timeout,2);
+        CRE_PROCESS(_timeout, 2);
         // RE2_PROCESS(_timeout);
         process_status = 8;
         break;
     case 8:
         vaccume_process_led_glow();
         _timeout = 150000; // 2:30
-        CUA_PROCESS(_timeout,-65,3);
+        CUA_PROCESS(_timeout, -65, 3);
         // UA3_PROCESS(_timeout);
         process_status = 9;
         break;
     case 9:
         vaccume_process_led_glow();
         _timeout = 450000; // 7:30
-        CPR_PROCESS(_timeout,216,3);
+        CPR_PROCESS(_timeout, 216, 3);
         //  PR1_PROCESS(_timeout);
         // PR3_PROCESS(_timeout);
         process_status = 10;
@@ -97,7 +98,7 @@ void prion_cycle(void)
     case 10:
         sterilize_process_led_glow();
         _timeout = 1080000; // 18:00
-        ST_PROCESS(_timeout,222);
+        ST_PROCESS(_timeout, 222);
         // ST_PROCESS(_timeout);
         process_status = 11;
         break;
@@ -118,8 +119,8 @@ void prion_cycle(void)
 
     case 13:
         end_process_led_glow();
-
         PASS_PROCESS();
+        RS = 0;
         // process_status = 14;
         break;
 

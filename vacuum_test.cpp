@@ -5,6 +5,8 @@
 
 // #define debug 1
 extern uint8_t dev;
+// extern uint8_t RS;
+
 #define print_debug 1
 
 extern uint8_t process_status;
@@ -26,7 +28,6 @@ extern float tmp4;
 extern float tmp2;
 extern float tmp3;
 
-
 extern uint32_t mm_;
 extern uint32_t ss_;
 
@@ -42,19 +43,19 @@ void vaccume_test_cycle(void)
     {
     case 1:
         VACCUME_PROCESS(); // 4 min
-        // break;
+        process_status = 2;
+        break;
     case 2:
         STEADY_PROCESS(); // 5 min
-        // break;
+        process_status = 3;
+        break;
     case 3:
         TESTING_PROCESS(); // 10 min
-        // break;
-        // case 4:
-        //     HOLDING_PROCESS();
-        //     break;
-
-    case 12:
+        process_status = 4;
+        break;
+    case 4:
         VAC_PASS_PROCESS(); // 30 sec
+        RS = 0;
         // break;
 
     default:
@@ -145,6 +146,7 @@ void VACCUME_PROCESS(void)
         {
             PORTH &= ~_BV(vac);
             PORTJ &= ~_BV(v4);
+            PORTJ &= ~_BV(v3); //.....................
             break;
         }
 
@@ -156,6 +158,7 @@ void VACCUME_PROCESS(void)
     /********* turn off all valve & Relay **********/
     PORTH &= ~_BV(vac);
     PORTJ &= ~_BV(v4);
+    PORTJ |= _BV(v4);
 }
 
 void STEADY_PROCESS(void)

@@ -1,6 +1,10 @@
 #include "BoardConfig.h"
 
 int fullScale = 9630; // max pressure (span) adjust
+
+// variables that required to convert voltage into resistance
+float C = -319; //-326; //Constant of straight line (Y = mx + C)
+float slope = 883.34; // Slope of straight line (Y = mx + C)
 float R0 = 1000;
 float alpha = 0.00385;
 //
@@ -102,7 +106,7 @@ float TS1(void)
   float Rx11 = 0;
   float temp11 = 0;
 
-   curr_time = millis();
+  curr_time = millis();
   for (int i = 0; i < sample; i++)
   {
     ts11 += analogRead(rtd2);
@@ -118,7 +122,8 @@ float TS1(void)
   V11 = (ts11 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
   // // Serial1.print("VOLATAGE : ");
   // // Serial1.println(V11);
-  Rx11 = 1000 * ((2.17 * V11) / (5 - V11)); // 2.18
+//  Rx11 = 1000 * ((2.17 * V11) / (5 - V11)); // 2.18
+   Rx11 = V11*slope+C; //y=mx+c
 
   // // Serial1.print("resistance : ");
   // // Serial1.println(Rx11);
@@ -163,13 +168,18 @@ float TS2(void)
   }
 
   ts12 /= sample;
-  V12 = (ts12 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
-  //     // Serial1.print("VOLATAGE : ");
-  // // Serial1.println(V12);
 
-  Rx12 = 1000 * ((2.17 * V12) / (5 - V12));
-  // // Serial1.print("resistance : ");
-  // // Serial1.println(Rx12);
+  Serial1.print("ts12 : ");
+  Serial1.println(V12);
+
+  V12 = (ts12 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
+  Serial1.print("VOLATAGE : ");
+  Serial1.println(V12);
+
+//  Rx12 = 1000 * ((2.19 * V12) / (5 - V12));
+   Rx12 = V12*slope+C; //y=mx+c
+  Serial1.print("resistance : ");
+  Serial1.println(Rx12);
 
   temp12 = ((Rx12 / R0) - 1) / alpha;
 
@@ -215,7 +225,8 @@ float TS3(void)
   V1 = (ts1 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
   // // Serial1.print("VOLATAGE : ");
   // // Serial1.println(V1);
-  Rx1 = 1000 * ((2.17 * V1) / (5 - V1));
+//  Rx1 = 1000 * ((2.17 * V1) / (5 - V1));
+   Rx1 = V1*slope+C; //y=mx+c
 
   // // Serial1.print("resistance : ");
   // // Serial1.println(Rx1);

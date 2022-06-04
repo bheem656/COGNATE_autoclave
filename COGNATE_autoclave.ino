@@ -177,6 +177,58 @@ void ISR_water_fresh()
   }
 }
 
+uint8_t readFlag = 0;
+unsigned long timer;
+unsigned long duration;
+int analogVal0 = 0;
+int analogVal1 = 0;
+int analogVal8 = 0;
+
+ISR(ADC_vect) {
+  //  duration = micros() - timer;
+  //  timer = micros();
+
+  // analogVal0 = ADCL | (ADCH << 8);//alway read Low byte first!!
+
+  switch (ADMUX)
+  {
+    case 0x40:
+      analogVal0 = ADCL | (ADCH << 8);//alway read Low byte first!!
+      if(analogVal0 >= 250)
+      ADMUX = 0x41;
+      break;
+
+    case 0x41:
+      analogVal1 = ADCL | (ADCH << 8);//alway read Low byte first!!
+      ADMUX = 0x48;
+      break;
+
+    case 0x48:
+      analogVal8 = ADCL | (ADCH << 8);//alway read Low byte first!!
+      ADMUX = 0x40;
+      break;
+
+    default :
+      break;
+  }
+
+  ADCSRA |= (1 << ADSC);
+  readFlag = 1;
+  //  Serial.println(analogVal);
+}
+
+void adc_init(void)
+{
+  ADMUX |= (1 << REFS0); // VCC AREF
+  ADCSRA |= (1 << ADIF);                                // ADC Interrupt Flag
+  ADCSRA |= (1 << ADIE);                                // ADC Interrupt Enable
+  ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS1); // 111 - 16MHZ /128
+  ADCSRA |= (1 << ADEN);                                // ADC Enable
+  ADCSRA |= (1 << ADSC);
+  sei();
+}
+
+float pr;
 void setup()
 {
   Serial1.begin(9600);
@@ -191,26 +243,33 @@ void setup()
   //  MAX7219_Clear(2);
   print_load();
 
+ PORTH |= _BV(vac);
   PORTH |= _BV(fan);
-
-  PORTJ |= _BV(v2);
-  // PORTJ |= _BV(v3);
-  // PORTJ |= _BV(v4);
-
-delay(3000);
-//   float pr = 0;
-//    pr = mpx();
-//  while (pr < -3)
+ PORTJ |= _BV(v2);
+//  PORTJ |= _BV(v3);
+//  // PORTJ |= _BV(v4);
+//
+// pr = mpx();
+//  while(pr > -80)
 //  {
-//    pr = mpx();
-//    Serial1.print("..");
+//      pr = mpx();
+//
 //  }
-//  Serial1.println("ready to go");
-
-  PORTJ &= ~ _BV(v2);
-  // PORTJ &= ~ _BV(v3);
-  // PORTJ &= ~ _BV(v4);
-
+//
+ delay(10000);
+  //   float pr = 0;
+  //    pr = mpx();
+  //  while (pr < -3)
+  //  {
+  //    pr = mpx();
+  //    Serial1.print("..");
+  //  }
+  //  Serial1.println("ready to go");
+ PORTH &= ~ _BV(vac);
+  PORTJ &= ~_BV(v2);
+  PORTH &=~ _BV(vac);
+ PORTJ &= ~ _BV(v3);
+ PORTJ &= ~ _BV(v4);
 }
 
 void loop()
@@ -337,24 +396,25 @@ void loop()
   Serial1.print("start_sw Status : ");
   Serial1.println(start_sw);
 
+  Serial1.println("...........in main program..............");
   // RS =1 ;
   if (RS)
   {
 
     delay(300);
 
-    if ((drain == 1) || (fresh == 1)) // && (door_status == 1)
-    {
-      RS = 0;
-      // Serial1.println("TRIGGER ...................");
-      Serial1.println("PLEASE CLOSE THE DOOR");
-    }
+    // if ((drain == 1) || (fresh == 1)) // && (door_status == 1)
+    // {
+    //   RS = 0;
+    //   // Serial1.println("TRIGGER ...................");
+    //   Serial1.println("PLEASE CLOSE THE DOOR");
+    // }
 
     /*************
      * Get Temp & Pressure to  skip pre heating cycle *******
      * ********/
 
-    tmp4 = TS1();  // OUTER BODY
+    tmp4 = TS1(); // OUTER BODY
     tmp3 = TS3(); // STEAM G
 
     if (tmp3 > bypass_temp_SG || tmp4 > bypass_temp_RING)
@@ -368,12 +428,15 @@ void loop()
       process_status = 1;
     }
 
+    Serial1.println("while rs low");
     /************************  IF RS = 1 start running cycle ******************************/
     // process_status = 1;
     // prgrm_sw = 1;
     // RS = 1;
     while (RS)
     {
+
+      Serial1.println("while rs high");
 
       /*********** Run Main Program Cycle *****************************/
       if (prgrm_sw)
@@ -392,7 +455,7 @@ void loop()
           Serial1.println("wrapped_cycle");
           wrapped_cycle();
           break;
- 
+
         case 3:
           status_led_glow();
           Serial1.println("prion_cycle");
@@ -412,6 +475,8 @@ void loop()
           break;
 
         default:
+          Serial1.println("Done prgm................");
+
           break;
         }
       }
@@ -431,7 +496,7 @@ void loop()
         case 2:
           status_led_glow();
           Serial1.println("vaccume_test_cycle");
-          // vaccume_test_cycle();
+          vaccume_test_cycle();
           break;
 
         case 3:
@@ -441,6 +506,7 @@ void loop()
           break;
 
         default:
+          Serial1.println("Done test prgm................");
           break;
         }
       }

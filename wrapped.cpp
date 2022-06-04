@@ -5,6 +5,7 @@
 
 // #define debug 1
 extern uint8_t dev;
+// extern uint8_t RS;
 
 extern uint8_t process_status;
 extern uint32_t cuurent_time;
@@ -122,8 +123,8 @@ void wrapped_cycle(void)
 
     case 13:
         end_process_led_glow();
-
         PASS_PROCESS();
+        RS = 0;
         // process_status = 14;
         break;
 
