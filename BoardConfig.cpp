@@ -3,8 +3,8 @@
 int fullScale = 9630; // max pressure (span) adjust
 
 // variables that required to convert voltage into resistance
-float C = -319; //-326; //Constant of straight line (Y = mx + C)
-float slope = 883.34; // Slope of straight line (Y = mx + C)
+float C = -268.55; ////-319; //-326; //Constant of straight line (Y = mx + C)
+float slope = 871.11; //851//883.34; // Slope of straight line (Y = mx + C)
 float R0 = 1000;
 float alpha = 0.00385;
 //

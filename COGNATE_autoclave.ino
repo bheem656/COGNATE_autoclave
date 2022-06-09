@@ -243,8 +243,8 @@ void setup()
   //  MAX7219_Clear(2);
   print_load();
 
- PORTH |= _BV(vac);
-  PORTH |= _BV(fan);
+//  PORTH |= _BV(vac);
+//   PORTH |= _BV(fan);
  PORTJ |= _BV(v2);
 //  PORTJ |= _BV(v3);
 //  // PORTJ |= _BV(v4);
@@ -256,7 +256,7 @@ void setup()
 //
 //  }
 //
- delay(10000);
+ delay(8000);
   //   float pr = 0;
   //    pr = mpx();
   //  while (pr < -3)
@@ -270,10 +270,21 @@ void setup()
   PORTH &=~ _BV(vac);
  PORTJ &= ~ _BV(v3);
  PORTJ &= ~ _BV(v4);
+
+
+      // dry_process_led_glow();
+      // //  _timeout = 540000; // 9:00
+      //   Serial1.print(" current process :");
+      //   Serial1.println(process_status);
+      //   DR_PROCESS(540000);
 }
 
 void loop()
 {
+
+PORTJ |= _BV(v2);
+
+
 
   // delay(1000);
   // if (!(PINE & (1 << 4)))
@@ -291,6 +302,7 @@ void loop()
 
   // }
 
+//..............................................................................
   if (PINE & (1 << 5))
   {
     //  // Serial1.println("lower sensor WATER empty");
@@ -437,6 +449,7 @@ void loop()
     {
 
       Serial1.println("while rs high");
+      PORTJ &= ~_BV(v2);
 
       /*********** Run Main Program Cycle *****************************/
       if (prgrm_sw)

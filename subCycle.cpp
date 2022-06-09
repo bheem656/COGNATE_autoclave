@@ -492,6 +492,7 @@ void DR_PROCESS(uint32_t duration)
             Serial1.println("firstt running.....");
             PORTJ &= ~_BV(v2); //
             PORTH |= _BV(vac); // vaccume pump on
+            // PORTJ |= _BV(v3);  // 4th valve
             PORTJ |= _BV(v4);  // 4th valve
         }
         if (rev_time < 440000 && rev_time >= 410000) // if (ct > 100000 && ct <= 130000)
@@ -499,18 +500,21 @@ void DR_PROCESS(uint32_t duration)
             Serial1.println("second  running.....");
             PORTH |= _BV(vac); // vaccume pump on
             PORTJ |= _BV(v4);  // 4th valve
+            PORTJ |= _BV(v3);  // 4th valve
             PORTJ |= _BV(v2);
         }
         if (rev_time < 410000 && rev_time >= 270000) // if (ct > 130000 && ct <= 270000)
         {
             PORTH |= _BV(vac); // vaccume pump on
             PORTJ |= _BV(v4);  // 4th valve
+            // PORTJ |= _BV(v3);  // 4th valve
             PORTJ &= ~_BV(v2); //
         }
         if (rev_time < 270000 && rev_time >= 240000) // if (ct > 270000 && ct <= 300000)
         {
             PORTH |= _BV(vac); // vaccume pump on
             PORTJ |= _BV(v4);  // 4th valve
+            // PORTJ |= _BV(v3);  // 4th valve
             PORTJ |= _BV(v2);  // 4th valve
         }
         if (rev_time < 240000 && rev_time >= 90000) // if (ct > 300000 && ct <= 450000)
@@ -518,12 +522,14 @@ void DR_PROCESS(uint32_t duration)
 
             PORTH |= _BV(vac); // vaccume pump on
             PORTJ |= _BV(v4);  // 4th valve
+            PORTJ |= _BV(v3);  // 4th valve
             PORTJ &= ~_BV(v2); //
         }
         if (rev_time < 90000)
         {
             PORTH |= _BV(vac); // vaccume pump on
             PORTJ |= _BV(v4);  // 4th valve
+            // PORTJ |= _BV(v3);  // 4th valve
             PORTJ |= _BV(v2);  // 4th valve
         }
 
@@ -1043,8 +1049,8 @@ void DR_bnd_PROCESS(uint32_t duration)
 void PASS_PROCESS(void)
 {
     PORTJ |= _BV(v2);
-    delay(10000);
-    PORTJ &= ~_BV(v2);
+    // delay(10000);
+    // PORTJ &= ~_BV(v2);
     print_pass();
 }
 
