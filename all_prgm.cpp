@@ -7,7 +7,7 @@
 extern uint8_t dev;
 // extern uint8_t RS;
 
-extern uint8_t process_status;
+extern int8_t process_status;
 extern uint32_t cuurent_time;
 extern uint32_t last_time;
 extern volatile uint8_t RS;
@@ -72,7 +72,7 @@ void all_prgm_cycle(void)
 
     case 1:
         start_process_led_glow();
-        _timeout = 00; // 6:40  // 400000
+        _timeout = 400000; // 6:40  // 400000
         Serial1.print(" current process :");
         Serial1.println(process_status);
         HE_PROCESS(_timeout);
@@ -111,9 +111,9 @@ void all_prgm_cycle(void)
         _timeout = 150000; // 2:30
         Serial1.print(" current process :");
         Serial1.println(process_status);
-        CUA_PROCESS(_timeout, -65, 1);
+        CUA_PROCESS(_timeout, -65, 2);
         // UA1_PROCESS(_timeout);
-        process_status = 3;
+        process_status = 6;
         break;
 
     case 6:
@@ -123,7 +123,7 @@ void all_prgm_cycle(void)
         Serial1.println(process_status);
         CPR_PROCESS(_timeout, 60, 2);
         // PR2_PROCESS(_timeout);
-        process_status = 6;
+        process_status = 7;
         break;
 
         // case 6:

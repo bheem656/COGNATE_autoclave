@@ -3,8 +3,8 @@
 int fullScale = 9630; // max pressure (span) adjust
 
 // variables that required to convert voltage into resistance
-float C = -268.55; ////-319; //-326; //Constant of straight line (Y = mx + C)
-float slope = 871.11; //851//883.34; // Slope of straight line (Y = mx + C)
+float C = -268.55;    ////-319; //-326; //Constant of straight line (Y = mx + C)
+float slope = 871.11; // 851//883.34; // Slope of straight line (Y = mx + C)
 float R0 = 1000;
 float alpha = 0.00385;
 //
@@ -32,9 +32,31 @@ void Timer1_init(void)
   sei(); // enable global interrupts
 }
 
+void Beep(uint8_t _duration)
+{
+  PORTH |= (1 << 6);
+  delay(_duration);
+  PORTH &= ~(1 << 6);
+}
+void Beep_Toggle(uint8_t _count, uint16_t _duration)
+{
+  while (_count)
+  {
+    PORTH |= (1 << 6);
+    delay(_duration); // on time
+    PORTH &= ~(1 << 6); 
+     delay(_duration); // off time
+    _count--;
+  }
+}
 void board_init(void)
 {
-  // TEMP SENSOR INPUT PORT
+
+  DDRH |= _BV(DDH6);
+  // DDRH |= (1<<6); // BUZZER
+  // PORTB |= (1 << 5);
+  //  TEMP SENSOR INPUT PORT
+
   DDRF &= (_BV(DDF4)); // PRESSUR
   DDRF &= (_BV(DDF5)); // TS1
   DDRF &= (_BV(DDF6)); // TS2
@@ -120,10 +142,10 @@ float TS1(void)
 
   ts11 /= sample;
   V11 = (ts11 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
-  // // Serial1.print("VOLATAGE : ");
-  // // Serial1.println(V11);
-//  Rx11 = 1000 * ((2.17 * V11) / (5 - V11)); // 2.18
-   Rx11 = V11*slope+C; //y=mx+c
+                               // // Serial1.print("VOLATAGE : ");
+                               // // Serial1.println(V11);
+                               //  Rx11 = 1000 * ((2.17 * V11) / (5 - V11)); // 2.18
+  Rx11 = V11 * slope + C;      // y=mx+c
 
   // // Serial1.print("resistance : ");
   // // Serial1.println(Rx11);
@@ -176,8 +198,8 @@ float TS2(void)
   Serial1.print("VOLATAGE : ");
   Serial1.println(V12);
 
-//  Rx12 = 1000 * ((2.19 * V12) / (5 - V12));
-   Rx12 = V12*slope+C; //y=mx+c
+  //  Rx12 = 1000 * ((2.19 * V12) / (5 - V12));
+  Rx12 = V12 * slope + C; // y=mx+c
   Serial1.print("resistance : ");
   Serial1.println(Rx12);
 
@@ -223,10 +245,10 @@ float TS3(void)
 
   ts1 /= sample;
   V1 = (ts1 / 1023.0) * 5.0; // (bits/2^n-1)*Vmax
-  // // Serial1.print("VOLATAGE : ");
-  // // Serial1.println(V1);
-//  Rx1 = 1000 * ((2.17 * V1) / (5 - V1));
-   Rx1 = V1*slope+C; //y=mx+c
+                             // // Serial1.print("VOLATAGE : ");
+                             // // Serial1.println(V1);
+                             //  Rx1 = 1000 * ((2.17 * V1) / (5 - V1));
+  Rx1 = V1 * slope + C;      // y=mx+c
 
   // // Serial1.print("resistance : ");
   // // Serial1.println(Rx1);

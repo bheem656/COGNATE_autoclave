@@ -7,7 +7,7 @@
 extern uint8_t dev;
 // extern uint8_t RS;
 
-extern uint8_t process_status;
+extern int8_t process_status;
 extern uint32_t cuurent_time;
 extern uint32_t last_time;
 extern volatile uint8_t RS;
@@ -41,16 +41,16 @@ void wrapped_cycle(void)
         Serial1.print(" current process :");
         Serial1.println(process_status);
 
-          Serial1.print(" _timeout :");
+        Serial1.print(" _timeout :");
         Serial1.println(_timeout);
-        CUA_PROCESS(_timeout,-80,1);
+        CUA_PROCESS(_timeout,-81,1);
         // UA1_PROCESS(_timeout);
         process_status = 3;
         break;
     case 3:
         vaccume_process_led_glow();
         _timeout = 270000; // 1:35 --> 4:30
-        CPR_PROCESS(_timeout,90,1);
+        CPR_PROCESS(_timeout, 91 ,1);
         // PR1_PROCESS(_timeout);
         process_status = 4;
         break;
@@ -64,14 +64,14 @@ void wrapped_cycle(void)
     case 5:
         vaccume_process_led_glow();
         _timeout = 157000; // 2:37
-        CUA_PROCESS(_timeout,-65,2);
+        CUA_PROCESS(_timeout,-66,2);
         // UA2_PROCESS(_timeout);
         process_status = 6;
         break;
     case 6:
         vaccume_process_led_glow();
         _timeout = 148000; // 2:28
-        CPR_PROCESS(_timeout,60,2);
+        CPR_PROCESS(_timeout, 61, 2);
         // PR2_PROCESS(_timeout);
         process_status = 7;
         break;
@@ -79,7 +79,7 @@ void wrapped_cycle(void)
     case 7:
         vaccume_process_led_glow();
         _timeout = 28000; // 28 sec
-        CRE_PROCESS(_timeout,2);
+        CRE_PROCESS(_timeout, 2);
         // RE2_PROCESS(_timeout);
 
         process_status = 8;
@@ -87,14 +87,14 @@ void wrapped_cycle(void)
     case 8:
         vaccume_process_led_glow();
         _timeout = 250000; // 3:43
-        CUA_PROCESS(_timeout,-60,3);
+        CUA_PROCESS(_timeout,-61,3);
         // UA3_PROCESS(_timeout);
         process_status = 9;
         break;
     case 9:
         vaccume_process_led_glow();
         _timeout = 540000; // 6:00 - 9:00
-        CPR_PROCESS(_timeout,225,3); // 218
+        CPR_PROCESS(_timeout, 226 ,3); // 218
         // PR3_PROCESS(_timeout);
         process_status = 10;
         break;
@@ -106,7 +106,7 @@ void wrapped_cycle(void)
         // ST_PROCESS(_timeout); // 218 KPA
         process_status = 11;
         break;
-
+ 
     case 11:
         sterilize_process_led_glow();
         _timeout = 59000; // 59 sec

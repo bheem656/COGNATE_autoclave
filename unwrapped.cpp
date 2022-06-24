@@ -6,7 +6,7 @@
 extern uint8_t dev;
 // extern uint8_t RS;
 
-extern uint8_t process_status;
+extern int8_t process_status;
 extern uint32_t cuurent_time;
 extern uint32_t last_time;
 extern volatile uint8_t RS;
@@ -43,7 +43,7 @@ void unwrapped_cycle(void)
         _timeout = 400000; // 6:40  // 400000
         Serial1.print(" current process :");
         Serial1.println(process_status);
-        HE_PROCESS(_timeout);
+       HE_PROCESS(_timeout);
         process_status = 2;
         break;
     case 2:
@@ -51,7 +51,7 @@ void unwrapped_cycle(void)
         _timeout = 240000; // 3:40 220000
         Serial1.print(" current process :");
         Serial1.println(process_status);
-        CUA_PROCESS(_timeout, -80, 1);
+       CUA_PROCESS(_timeout, -81, 1);
         // UA1_PROCESS(_timeout);
         process_status = 3;
         break;
@@ -61,7 +61,7 @@ void unwrapped_cycle(void)
         Serial1.print(" current process :");
         Serial1.println(process_status);
         // PR1_PROCESS(_timeout);
-        CPR_PROCESS(_timeout, 150, 1);
+        CPR_PROCESS(_timeout, 151, 1);
         process_status = 4;
         break;
     case 4:
@@ -78,7 +78,7 @@ void unwrapped_cycle(void)
         _timeout = 390000; // 6:30  390000
         Serial1.print(" current process :");
         Serial1.println(process_status);
-        CPR_PROCESS(_timeout, 218, 2);
+        CPR_PROCESS(_timeout, 219, 2);
         // PR2_PROCESS(_timeout);
         process_status = 6;
         break;

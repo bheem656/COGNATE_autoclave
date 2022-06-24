@@ -7,7 +7,7 @@
 extern uint8_t dev;
 // extern uint8_t RS;
 
-extern uint8_t process_status;
+extern int8_t process_status;
 extern uint32_t cuurent_time;
 extern uint32_t last_time;
 extern volatile uint8_t RS;

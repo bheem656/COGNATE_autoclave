@@ -3,6 +3,8 @@
 
 #include "Arduino.h"
 
+#define buzzer PORTB5
+
 #define v1 PORTJ6
 #define v2 PORTJ3
 #define v3 PORTJ5
@@ -81,7 +83,7 @@ enum sub_cycle
 };
 
 /***********  program cycle process methods ************/
-void HE_PROCESS(uint32_t duration);
+
 // void UA1_PROCESS(uint32_t duration );
 // void PR1_PROCESS(uint32_t duration);
 // void RE1_PROCESS(uint32_t duration);
@@ -102,6 +104,7 @@ void HE_PROCESS(uint32_t duration);
 // void PR5_PROCESS(uint32_t duration);
 
 // void ST_PROCESS(uint32_t duration);
+void HE_PROCESS(uint32_t duration);
 void ST_PROCESS(uint32_t duration, uint32_t _prr );
 
 void RE_PROCESS(uint32_t duration);
@@ -115,7 +118,7 @@ void PASS_PROCESS(void);
 void CPR_PROCESS(uint32_t duration , int16_t _pressure, uint8_t process_num);
 void CUA_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num);
 void CRE_PROCESS(uint32_t duration, uint8_t process_num);
-
+//void test_CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num);  // change function
 /*********** running prgram led  status methods ************/
 void start_process_led_glow(void);
 void vaccume_process_led_glow(void);
@@ -147,6 +150,7 @@ void second_all_test_process(void);
 
 /***********  program select  led status method ************/
 void status_led_glow(void);
+void Beep(uint8_t _duration); // buzzer
 // void get_btn_status(void);
-
+void Beep_Toggle(uint8_t _count, uint16_t _duration);
 #endif
