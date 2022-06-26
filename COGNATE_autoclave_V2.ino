@@ -1,11 +1,13 @@
 #include <Sodaq_PcInt.h>
 #include "BoardConfig.h"
-#include "max.h"
+
+#include <EEPROM.h>
+// #include "ErrorList.h"
 
 /************** Global Variable  ********************/
 
 uint8_t dev = 2;
-
+// uint8_t current_cycle = 2;
 uint8_t bypass_temp_SG = 150;
 uint8_t bypass_temp_RING = 100;
 
@@ -22,7 +24,6 @@ float pres;
 float tmp4;
 float tmp2;
 float tmp3;
-
 uint8_t test_sw = 0;
 uint8_t prgrm_sw = 0;
 bool start_sw = 0;
@@ -61,7 +62,7 @@ ISR(TIMER1_OVF_vect)
   {
     count = 0;
     _pres = mpx();
-    _temp = TS2() - 4.5;
+    _temp = TS2() + 0.5 - 1; // +0.5
     lcd1_temp(_temp);
     lcd2_press(_pres);
     TIFR1 |= 0x01;
@@ -184,7 +185,8 @@ int analogVal0 = 0;
 int analogVal1 = 0;
 int analogVal8 = 0;
 
-ISR(ADC_vect) {
+ISR(ADC_vect)
+{
   //  duration = micros() - timer;
   //  timer = micros();
 
@@ -192,24 +194,24 @@ ISR(ADC_vect) {
 
   switch (ADMUX)
   {
-    case 0x40:
-      analogVal0 = ADCL | (ADCH << 8);//alway read Low byte first!!
-      if(analogVal0 >= 250)
+  case 0x40:
+    analogVal0 = ADCL | (ADCH << 8); // alway read Low byte first!!
+    if (analogVal0 >= 250)
       ADMUX = 0x41;
-      break;
+    break;
 
-    case 0x41:
-      analogVal1 = ADCL | (ADCH << 8);//alway read Low byte first!!
-      ADMUX = 0x48;
-      break;
+  case 0x41:
+    analogVal1 = ADCL | (ADCH << 8); // alway read Low byte first!!
+    ADMUX = 0x48;
+    break;
 
-    case 0x48:
-      analogVal8 = ADCL | (ADCH << 8);//alway read Low byte first!!
-      ADMUX = 0x40;
-      break;
+  case 0x48:
+    analogVal8 = ADCL | (ADCH << 8); // alway read Low byte first!!
+    ADMUX = 0x40;
+    break;
 
-    default :
-      break;
+  default:
+    break;
   }
 
   ADCSRA |= (1 << ADSC);
@@ -219,7 +221,7 @@ ISR(ADC_vect) {
 
 void adc_init(void)
 {
-  ADMUX |= (1 << REFS0); // VCC AREF
+  ADMUX |= (1 << REFS0);                                // VCC AREF
   ADCSRA |= (1 << ADIF);                                // ADC Interrupt Flag
   ADCSRA |= (1 << ADIE);                                // ADC Interrupt Enable
   ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS1); // 111 - 16MHZ /128
@@ -229,8 +231,10 @@ void adc_init(void)
 }
 
 float pr;
+uint8_t eep_data_0 ;
 void setup()
 {
+  
   Serial1.begin(9600);
   PcInt::attachInterrupt(63, handleA0);
 
@@ -241,22 +245,49 @@ void setup()
   Timer1_init();
   //  MAX7219_Clear(1);
   //  MAX7219_Clear(2);
+  eep_data_0 =  EEPROM.read(0);
+  Serial1.print("eprom data  ");
+  Serial1.println(eep_data_0);
+ if(eep_data_0 != 0)
+ {
+  // Check_Error();
+   print_code(9, 8);
+  
+  // set_char(4, 14, 2, false);
+  // set_char(3, 82, 2, true);
+  // set_char(2, 9, 2, false);
+  // set_char(1, 8, 2, false);
+  Serial1.print("eprom data  ");
+ Serial1.println(eep_data_0);
+ }
   print_load();
 
-//  PORTH |= _BV(vac);
-//   PORTH |= _BV(fan);
- PORTJ |= _BV(v2);
-//  PORTJ |= _BV(v3);
-//  // PORTJ |= _BV(v4);
-//
-// pr = mpx();
-//  while(pr > -80)
-//  {
-//      pr = mpx();
-//
-//  }
-//
- delay(8000);
+  // Beep( 5000);
+  // void Beep_Toggle(uint8_t _count, uint8_t _duration)
+  //   Beep_Toggle( 10, 200);
+
+  // PORTB |= (1<<5);
+  // PORTB |= (1 << 5);
+  // PORTH |= (1<<6);
+
+  //   delay(10000);
+  //   PORTH &= ~(1<<6);
+  // PORTH |= (1<<6);
+
+  //  PORTH |= _BV(vac);
+  PORTH |= _BV(fan);
+  PORTJ |= _BV(v2);
+  //  PORTJ |= _BV(v3);
+  //  // PORTJ |= _BV(v4);
+  //
+  // pr = mpx();
+  //  while(pr > -80)
+  //  {
+  //      pr = mpx();
+  //
+  //  }
+  //
+  delay(15000);
   //   float pr = 0;
   //    pr = mpx();
   //  while (pr < -3)
@@ -265,26 +296,26 @@ void setup()
   //    Serial1.print("..");
   //  }
   //  Serial1.println("ready to go");
- PORTH &= ~ _BV(vac);
+  PORTH &= ~_BV(vac);
   PORTJ &= ~_BV(v2);
-  PORTH &=~ _BV(vac);
- PORTJ &= ~ _BV(v3);
- PORTJ &= ~ _BV(v4);
+  PORTH &= ~_BV(vac);
+  PORTJ &= ~_BV(v3);
+  PORTJ &= ~_BV(v4);
 
-
-      // dry_process_led_glow();
-      // //  _timeout = 540000; // 9:00
-      //   Serial1.print(" current process :");
-      //   Serial1.println(process_status);
-      //   DR_PROCESS(540000);
+  // dry_process_led_glow();
+  // //  _timeout = 540000; // 9:00
+  //   Serial1.print(" current process :");
+  //   Serial1.println(process_status);
+  //   DR_PROCESS(540000);
+  //  Serial1.println(" CPR process started  :");
+  //  CPR_PROCESS(257000,90,1);
+ 
 }
 
 void loop()
 {
 
-PORTJ |= _BV(v2);
-
-
+  PORTJ |= _BV(v2);
 
   // delay(1000);
   // if (!(PINE & (1 << 4)))
@@ -302,7 +333,7 @@ PORTJ |= _BV(v2);
 
   // }
 
-//..............................................................................
+  //..............................................................................
   if (PINE & (1 << 5))
   {
     //  // Serial1.println("lower sensor WATER empty");
@@ -421,7 +452,21 @@ PORTJ |= _BV(v2);
     //   // Serial1.println("TRIGGER ...................");
     //   Serial1.println("PLEASE CLOSE THE DOOR");
     // }
+    if ((drain == 1) || (fresh == 1)) // && (door_status == 1) //|| (door_status == 1)
+    {
+      RS = 0;
+      // beeping buzzer
+      // beeping buzzer
+      //  Serial1.println("TRIGGER ...................");
+      Beep_Toggle(10, 200);
 
+      // Beep( 5000);
+      Serial1.println("PLEASE CLOSE THE DOOR");
+    }
+    else
+    {
+      EEPROM.write(0, 1); // eprom zero adderess 1 start cycle running
+    }
     /*************
      * Get Temp & Pressure to  skip pre heating cycle *******
      * ********/
@@ -454,6 +499,7 @@ PORTJ |= _BV(v2);
       /*********** Run Main Program Cycle *****************************/
       if (prgrm_sw)
       {
+        EEPROM.write(0,1);
         switch (prgrm_sw)
         {
 

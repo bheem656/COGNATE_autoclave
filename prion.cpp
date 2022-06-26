@@ -7,7 +7,7 @@
 extern uint8_t dev;
 // extern uint8_t RS;
 
-extern uint8_t process_status;
+extern int8_t process_status;
 extern uint32_t cuurent_time;
 extern uint32_t last_time;
 extern volatile uint8_t RS;
@@ -36,17 +36,17 @@ void prion_cycle(void)
         break;
     case 2:
         vaccume_process_led_glow();
-        _timeout = 160000; // 2:40
+        _timeout = 170000; // 2:40 // 2:50
         Serial1.print(" current process :");
         Serial1.println(process_status);
-        CUA_PROCESS(_timeout, -80, 1);
+        CUA_PROCESS(_timeout, -81, 1);
         // UA1_PROCESS(_timeout);
         process_status = 3;
         break;
     case 3:
         vaccume_process_led_glow();
         _timeout = 270000; // 4:30
-        CPR_PROCESS(_timeout, 90, 1);
+        CPR_PROCESS(_timeout, 91, 1);
         // PR1_PROCESS(_timeout);
         process_status = 4;
         break;
@@ -59,16 +59,16 @@ void prion_cycle(void)
         break;
     case 5:
         vaccume_process_led_glow();
-        _timeout = 140000; // 2:20
-        CUA_PROCESS(_timeout, -65, 2);
+        _timeout = 180000; // 2:30 // 3:00
+        CUA_PROCESS(_timeout, -66, 2);
         // UA2_PROCESS(_timeout);
         process_status = 6;
         break;
     case 6:
         vaccume_process_led_glow();
-        _timeout = 15000; // 2:30
-        CPR_PROCESS(_timeout, 60, 2);
-        // PR2_PROCESS(_timeout);
+        _timeout = 150000; // 2:30
+        //test_CPR_PROCESS(_timeout, 60, 2);
+        CPR_PROCESS(_timeout, 61, 2);
         process_status = 7;
         break;
 
@@ -82,7 +82,7 @@ void prion_cycle(void)
     case 8:
         vaccume_process_led_glow();
         _timeout = 150000; // 2:30
-        CUA_PROCESS(_timeout, -65, 3);
+        CUA_PROCESS(_timeout, -66, 3);
         // UA3_PROCESS(_timeout);
         process_status = 9;
         break;

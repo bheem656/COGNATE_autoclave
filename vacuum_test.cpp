@@ -9,7 +9,7 @@ extern uint8_t dev;
 
 #define print_debug 1
 
-extern uint8_t process_status;
+extern int8_t process_status;
 extern uint32_t _cuurent_time;
 extern uint32_t _last_time;
 extern uint32_t curr_time;
