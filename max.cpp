@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 
+
 //#include <SPI.h>
 
 // void timer1_init(void)
@@ -408,6 +409,14 @@ void show_time(uint8_t d4, uint8_t d3, uint8_t d2, uint8_t d1)
 
   set_char(4, d4, 2, false);
   set_char(3, d3, 2, true);
+  set_char(2, d2, 2, false);
+  set_char(1, d1, 2, false);
+}
+
+void print_code(uint8_t d2,uint8_t d1)
+{
+  set_char(4, 14, 2, false);
+  set_char(3, 82, 2, true);
   set_char(2, d2, 2, false);
   set_char(1, d1, 2, false);
 }

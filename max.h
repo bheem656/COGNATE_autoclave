@@ -182,6 +182,17 @@ void print_RE(void);
 void print_dr(void);
 void print_pass(void);
 
+void print_code(uint8_t d2,uint8_t d1);
+
 void show_time(uint8_t d4, uint8_t d3, uint8_t d2, uint8_t d1);
+
+
+
+
+// uint8_t error_list[20][5];
+
+// uint8_t error_details[20][100];
+
+// void Check_Error(void);
 
 #endif

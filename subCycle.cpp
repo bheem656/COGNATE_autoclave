@@ -1,6 +1,8 @@
 #include "BoardConfig.h"
-#include "max.h"
+// #include "max.h"
+#include <EEPROM.h>
 
+// #include "ErrorList.h"
 // #define debug 1
 extern uint8_t dev;
 // extern uint8_t RS;
@@ -46,10 +48,10 @@ void HE_PROCESS(uint32_t duration)
     /***************************  Run for duration time ********************/
     curr_time = millis() - _cuurent_time;
     /********************  new ************************************/
-
-
     while (curr_time < duration)
     {
+        Check_Error();
+
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -157,6 +159,7 @@ void ST_PROCESS(uint32_t duration, uint32_t _prr)
 
     while (curr_time < duration)
     {
+        Check_Error();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -289,6 +292,7 @@ void RE_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
+        Check_Error();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -408,6 +412,7 @@ void DR_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
+        Check_Error();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -573,6 +578,7 @@ void DR_porous_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
+        Check_Error();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -740,6 +746,7 @@ void DR_all_prgm_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
+         Check_Error();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -918,6 +925,7 @@ void DR_bnd_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
+        Check_Error();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -1054,6 +1062,7 @@ void PASS_PROCESS(void)
     // PORTJ &= ~_BV(v2);
     print_pass();
      Beep_Toggle( 10, 200);
+     EEPROM.write(0, 0);
 }
 
 /****************************** common function *****************************************/
@@ -1074,6 +1083,7 @@ void CRE_PROCESS(uint32_t duration, uint8_t process_num)
 
     while (curr_time < duration)
     {
+        Check_Error();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -1201,6 +1211,7 @@ void CUA_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
 
     while (curr_time < duration)
     {
+        Check_Error();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -1328,7 +1339,8 @@ void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
     // delay(100);
     while (curr_time < duration) // while (pressure <= _pressure)
     {
-        Serial1.println("running..");
+        Check_Error();
+        //Serial1.println("running..");
 
         // if (curr_time > 600)
         // {
@@ -1489,6 +1501,7 @@ void first_all_test_process()
 
     while (curr_time < 40000)
     {
+        Check_Error();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -1549,6 +1562,7 @@ void second_all_test_process()
 
     while (curr_time < 60000)
     {
+        Check_Error();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;

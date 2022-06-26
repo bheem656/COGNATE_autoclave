@@ -1,11 +1,13 @@
 #include <Sodaq_PcInt.h>
 #include "BoardConfig.h"
-#include "max.h"
+
+#include <EEPROM.h>
+// #include "ErrorList.h"
 
 /************** Global Variable  ********************/
 
 uint8_t dev = 2;
-//uint8_t current_cycle = 2;
+// uint8_t current_cycle = 2;
 uint8_t bypass_temp_SG = 150;
 uint8_t bypass_temp_RING = 100;
 
@@ -22,7 +24,6 @@ float pres;
 float tmp4;
 float tmp2;
 float tmp3;
-
 uint8_t test_sw = 0;
 uint8_t prgrm_sw = 0;
 bool start_sw = 0;
@@ -61,7 +62,7 @@ ISR(TIMER1_OVF_vect)
   {
     count = 0;
     _pres = mpx();
-    _temp = TS2() + 0.5-1; // +0.5
+    _temp = TS2() + 0.5 - 1; // +0.5
     lcd1_temp(_temp);
     lcd2_press(_pres);
     TIFR1 |= 0x01;
@@ -230,9 +231,10 @@ void adc_init(void)
 }
 
 float pr;
-
+uint8_t eep_data_0 ;
 void setup()
 {
+  
   Serial1.begin(9600);
   PcInt::attachInterrupt(63, handleA0);
 
@@ -243,19 +245,34 @@ void setup()
   Timer1_init();
   //  MAX7219_Clear(1);
   //  MAX7219_Clear(2);
+  eep_data_0 =  EEPROM.read(0);
+  Serial1.print("eprom data  ");
+  Serial1.println(eep_data_0);
+ if(eep_data_0 != 0)
+ {
+  // Check_Error();
+   print_code(9, 8);
+  
+  // set_char(4, 14, 2, false);
+  // set_char(3, 82, 2, true);
+  // set_char(2, 9, 2, false);
+  // set_char(1, 8, 2, false);
+  Serial1.print("eprom data  ");
+ Serial1.println(eep_data_0);
+ }
   print_load();
 
   // Beep( 5000);
-//void Beep_Toggle(uint8_t _count, uint8_t _duration)
-//  Beep_Toggle( 10, 200);
+  // void Beep_Toggle(uint8_t _count, uint8_t _duration)
+  //   Beep_Toggle( 10, 200);
 
- //PORTB |= (1<<5);
- //PORTB |= (1 << 5);
-// PORTH |= (1<<6);
- 
-//   delay(10000);
-//   PORTH &= ~(1<<6);
-  //PORTH |= (1<<6); 
+  // PORTB |= (1<<5);
+  // PORTB |= (1 << 5);
+  // PORTH |= (1<<6);
+
+  //   delay(10000);
+  //   PORTH &= ~(1<<6);
+  // PORTH |= (1<<6);
 
   //  PORTH |= _BV(vac);
   PORTH |= _BV(fan);
@@ -292,6 +309,7 @@ void setup()
   //   DR_PROCESS(540000);
   //  Serial1.println(" CPR process started  :");
   //  CPR_PROCESS(257000,90,1);
+ 
 }
 
 void loop()
@@ -434,18 +452,21 @@ void loop()
     //   // Serial1.println("TRIGGER ...................");
     //   Serial1.println("PLEASE CLOSE THE DOOR");
     // }
-    if ((drain == 1) || (fresh == 1) ) // && (door_status == 1) //|| (door_status == 1)
+    if ((drain == 1) || (fresh == 1)) // && (door_status == 1) //|| (door_status == 1)
     {
       RS = 0;
-       //beeping buzzer
-      //beeping buzzer
-      // Serial1.println("TRIGGER ...................");
-     // Beep_Toggle( 10, 200);
-     
-   Beep( 5000);
+      // beeping buzzer
+      // beeping buzzer
+      //  Serial1.println("TRIGGER ...................");
+      Beep_Toggle(10, 200);
+
+      // Beep( 5000);
       Serial1.println("PLEASE CLOSE THE DOOR");
     }
-
+    else
+    {
+      EEPROM.write(0, 1); // eprom zero adderess 1 start cycle running
+    }
     /*************
      * Get Temp & Pressure to  skip pre heating cycle *******
      * ********/
@@ -478,6 +499,7 @@ void loop()
       /*********** Run Main Program Cycle *****************************/
       if (prgrm_sw)
       {
+        EEPROM.write(0,1);
         switch (prgrm_sw)
         {
 
