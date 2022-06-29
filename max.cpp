@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 
+
 //#include <SPI.h>
 
 // void timer1_init(void)
@@ -360,7 +361,16 @@ void print_load()
   set_char(3, 79, 2, false); // 79
   set_char(4, 76, 2, false); // 76
 }
-
+void print_load_blink()
+{
+  set_char(1, 68, 2, false); // 68
+  set_char(2, 97, 2, false); // 65
+  set_char(3, 79, 2, false); // 79
+  set_char(4, 76, 2, false); // 76
+  delay(1000);
+  MAX7219_Clear(2);
+  delay(1000);
+}
 void print_he(void)
 {
   set_char(3, 72, 2, false); // 72 h
@@ -408,6 +418,14 @@ void show_time(uint8_t d4, uint8_t d3, uint8_t d2, uint8_t d1)
 
   set_char(4, d4, 2, false);
   set_char(3, d3, 2, true);
+  set_char(2, d2, 2, false);
+  set_char(1, d1, 2, false);
+}
+
+void print_code(uint8_t d2,uint8_t d1)
+{
+  set_char(4, 14, 2, false);
+  set_char(3, 82, 2, true);
   set_char(2, d2, 2, false);
   set_char(1, d1, 2, false);
 }

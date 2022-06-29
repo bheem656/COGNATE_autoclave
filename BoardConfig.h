@@ -2,6 +2,8 @@
 #define BoardConfig_h
 
 #include "Arduino.h"
+#include "max.h"
+
 
 #define buzzer PORTB5
 
@@ -65,22 +67,22 @@ void Timer1_init(void);
 
 /* cycles */
 
-enum sub_cycle
-{
-    HE = 0,
-    UA1,
-    PR1,
-    RE1,
-    UA2,
-    PR2,
-    RE2,
-    UA3,
-    PR3,
-    ST,
-    RE,
-    DR,
-    PASS
-};
+// enum sub_cycle
+// {
+//     HE = 0,
+//     UA1,
+//     PR1,
+//     RE1,
+//     UA2,
+//     PR2,
+//     RE2,
+//     UA3,
+//     PR3,
+//     ST,
+//     RE,
+//     DR,
+//     PASS
+// };
 
 /***********  program cycle process methods ************/
 
@@ -148,9 +150,24 @@ void VAC_PASS_PROCESS(void);
 void first_all_test_process(void);
 void second_all_test_process(void);
 
+/********************* ADC Function ***********************/
+// float TS1(void);
+// float TS2(void);
+// float TS3(void);
+// float mpx(void);
+
+
+void find_error(void);
+void check_selected_program(void);
+void check_water_tank(void);
+void beep_4(void);
+void beep_2(void);
 /***********  program select  led status method ************/
 void status_led_glow(void);
 void Beep(uint8_t _duration); // buzzer
 // void get_btn_status(void);
 void Beep_Toggle(uint8_t _count, uint16_t _duration);
+
+void Check_Error(void);
+void door_current_status_print();
 #endif

@@ -1,13 +1,15 @@
 #include "BoardConfig.h"
-#include "max.h"
+// #include "max.h"
+#include <EEPROM.h>
 
+// #include "ErrorList.h"
 // #define debug 1
 extern uint8_t dev;
 // extern uint8_t RS;
 
 extern int8_t process_status;
 extern volatile uint8_t RS;
-
+extern volatile uint8_t door_status ;
 float steam_generator_temp;
 float outer_body_temp;
 float chamber_temp;
@@ -40,16 +42,17 @@ uint8_t _s1;
 void HE_PROCESS(uint32_t duration)
 {
 
+ EEPROM.write(0, 0);
     _cuurent_time = millis();
     _last_time = _cuurent_time;
 
     /***************************  Run for duration time ********************/
     curr_time = millis() - _cuurent_time;
     /********************  new ************************************/
-
-
     while (curr_time < duration)
     {
+        Check_Error();
+        check_water_tank();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -143,6 +146,8 @@ void HE_PROCESS(uint32_t duration)
             PORTC |= _BV(heat);
         }
     }
+
+     EEPROM.write(0, 1);
 }
 
 
@@ -157,7 +162,8 @@ void ST_PROCESS(uint32_t duration, uint32_t _prr)
 
     while (curr_time < duration)
     {
-
+        Check_Error();
+         check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         mm_ = curr_time / 60000; // Total minutes
@@ -289,7 +295,8 @@ void RE_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
-
+        Check_Error();
+        check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         mm_ = curr_time / 60000; // Total minutes
@@ -397,6 +404,8 @@ void RE_PROCESS(uint32_t duration)
     PORTJ |= _BV(v3);
     PORTJ |= _BV(v4);
 }
+
+
 void DR_PROCESS(uint32_t duration)
 {
     _cuurent_time = millis();
@@ -408,7 +417,8 @@ void DR_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
-
+        Check_Error();
+        check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         rev_time = duration - curr_time;
@@ -573,7 +583,8 @@ void DR_porous_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
-
+        Check_Error();
+       check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         rev_time = duration - curr_time;
@@ -740,7 +751,8 @@ void DR_all_prgm_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
-
+         Check_Error();
+       check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         rev_time = duration - curr_time;
@@ -918,7 +930,9 @@ void DR_bnd_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
-
+        Check_Error();
+       check_water_tank();
+       
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         rev_time = duration - curr_time;
@@ -1054,6 +1068,7 @@ void PASS_PROCESS(void)
     // PORTJ &= ~_BV(v2);
     print_pass();
      Beep_Toggle( 10, 200);
+     EEPROM.write(0, 0);
 }
 
 /****************************** common function *****************************************/
@@ -1074,7 +1089,8 @@ void CRE_PROCESS(uint32_t duration, uint8_t process_num)
 
     while (curr_time < duration)
     {
-
+        Check_Error();
+       check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         mm_ = curr_time / 60000; // Total minutes
@@ -1201,7 +1217,8 @@ void CUA_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
 
     while (curr_time < duration)
     {
-
+        Check_Error();
+       check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         rev_time = duration - curr_time;
@@ -1328,13 +1345,8 @@ void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
     // delay(100);
     while (curr_time < duration) // while (pressure <= _pressure)
     {
-        Serial1.println("running..");
-
-        // if (curr_time > 600)
-        // {
-        //     Serial1.println("error");
-        //     break;
-        // }
+        Check_Error();
+       check_water_tank();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -1489,7 +1501,8 @@ void first_all_test_process()
 
     while (curr_time < 40000)
     {
-
+        Check_Error();
+       check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         mm_ = curr_time / 60000; // Total minutes
@@ -1549,7 +1562,8 @@ void second_all_test_process()
 
     while (curr_time < 60000)
     {
-
+        Check_Error();
+       check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         mm_ = curr_time / 60000; // Total minutes
