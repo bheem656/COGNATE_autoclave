@@ -10,7 +10,7 @@ float R0 = 1000;
 float alpha = 0.00385;
 extern volatile uint8_t door_status;
 extern uint8_t error_status;
-
+extern int8_t process_status;
 extern uint8_t prgrm_sw;
 extern uint8_t test_sw;
 
@@ -756,28 +756,26 @@ void Check_Error()
     EEPROM.update(0, 0);
     error_status = 1;
 
-      while (digitalRead(48))
-      {
-        print_code(0, 1);
-        RS = 0;
-      }
-    
+    while (digitalRead(48))
+    {
+      print_code(0, 1);
+      RS = 0;
+    }
   }
   // Forced exit
 
-  // if (RS == 0)
-  // {
-  //   // uint8_t power_failure;// = EEPROM.read(0); // EEPROM.read()
-  //   error_status = 1;
-  //   if (EEPROM.read(0) == 1)
-  //   {
-  //     print_code(9, 8);
-  //     // EEPROM.update(0, 0);
-  //     RS = 0;
-
-  //     // CALL PRE HEAT
-  //   }
-  // }
+  if ((RS == 0) && (process_status == 99))
+  {
+    EEPROM.update(0, 0);
+    error_status = 1;
+    print_code(9, 9);
+    while (digitalRead(48))
+    {
+      print_code(0, 1);
+      RS = 0;
+    }
+    process_status = 1;
+  }
 }
 
 void door_current_status_print()

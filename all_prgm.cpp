@@ -186,6 +186,7 @@ void all_prgm_cycle(void)
         end_process_led_glow();
         PASS_PROCESS();
         RS = 0;
+        process_status = 0;
         break;
     default:
         break;

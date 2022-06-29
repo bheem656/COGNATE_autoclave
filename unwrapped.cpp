@@ -113,6 +113,7 @@ void unwrapped_cycle(void)
         Serial1.println(process_status);
         PASS_PROCESS();
         RS = 0;
+        process_status = 0;
         break;
 
     default:

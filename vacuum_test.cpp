@@ -56,6 +56,7 @@ void vaccume_test_cycle(void)
     case 4:
         VAC_PASS_PROCESS(); // 30 sec
         RS = 0;
+        process_status = 0;
         // break;
 
     default:

@@ -9,7 +9,7 @@ extern uint8_t dev;
 
 extern int8_t process_status;
 extern volatile uint8_t RS;
-extern volatile uint8_t door_status ;
+extern volatile uint8_t door_status;
 float steam_generator_temp;
 float outer_body_temp;
 float chamber_temp;
@@ -18,7 +18,7 @@ float pressure;
 /************** temp cut off  condition ******************/
 uint8_t max_steam_generator_temp = 180;
 uint8_t max_outer_body_temp = 90;
-uint16_t motor_on_time = 120; // 150 fine
+uint16_t motor_on_time = 120;   // 150 fine
 uint16_t motor_off_time = 1000; // increase 200 ms
 uint16_t _stPres = 223;
 /***************  variable for display time on 7-segment *******************/
@@ -42,7 +42,7 @@ uint8_t _s1;
 void HE_PROCESS(uint32_t duration)
 {
 
- EEPROM.write(0, 0);
+    EEPROM.write(0, 0);
     _cuurent_time = millis();
     _last_time = _cuurent_time;
 
@@ -64,8 +64,9 @@ void HE_PROCESS(uint32_t duration)
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
             break;
         }
 
@@ -147,9 +148,8 @@ void HE_PROCESS(uint32_t duration)
         }
     }
 
-     EEPROM.write(0, 1);
+    EEPROM.write(0, 1);
 }
-
 
 void ST_PROCESS(uint32_t duration, uint32_t _prr)
 {
@@ -163,7 +163,7 @@ void ST_PROCESS(uint32_t duration, uint32_t _prr)
     while (curr_time < duration)
     {
         Check_Error();
-         check_water_tank();
+        check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         mm_ = curr_time / 60000; // Total minutes
@@ -174,8 +174,9 @@ void ST_PROCESS(uint32_t duration, uint32_t _prr)
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            process_status = 99;
+            Check_Error();
+            Serial1.print("Forced exit");
             break;
         }
 
@@ -307,8 +308,9 @@ void RE_PROCESS(uint32_t duration)
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
             break;
         }
 
@@ -405,7 +407,6 @@ void RE_PROCESS(uint32_t duration)
     PORTJ |= _BV(v4);
 }
 
-
 void DR_PROCESS(uint32_t duration)
 {
     _cuurent_time = millis();
@@ -430,8 +431,9 @@ void DR_PROCESS(uint32_t duration)
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
             break;
         }
 
@@ -503,7 +505,7 @@ void DR_PROCESS(uint32_t duration)
             PORTJ &= ~_BV(v2); //
             PORTH |= _BV(vac); // vaccume pump on
             // PORTJ |= _BV(v3);  // 4th valve
-            PORTJ |= _BV(v4);  // 4th valve
+            PORTJ |= _BV(v4); // 4th valve
         }
         if (rev_time < 440000 && rev_time >= 410000) // if (ct > 100000 && ct <= 130000)
         {
@@ -525,7 +527,7 @@ void DR_PROCESS(uint32_t duration)
             PORTH |= _BV(vac); // vaccume pump on
             PORTJ |= _BV(v4);  // 4th valve
             // PORTJ |= _BV(v3);  // 4th valve
-            PORTJ |= _BV(v2);  // 4th valve
+            PORTJ |= _BV(v2); // 4th valve
         }
         if (rev_time < 240000 && rev_time >= 90000) // if (ct > 300000 && ct <= 450000)
         {
@@ -540,7 +542,7 @@ void DR_PROCESS(uint32_t duration)
             PORTH |= _BV(vac); // vaccume pump on
             PORTJ |= _BV(v4);  // 4th valve
             // PORTJ |= _BV(v3);  // 4th valve
-            PORTJ |= _BV(v2);  // 4th valve
+            PORTJ |= _BV(v2); // 4th valve
         }
 
         /***********************************************************************/
@@ -584,7 +586,7 @@ void DR_porous_PROCESS(uint32_t duration)
     while (curr_time < duration)
     {
         Check_Error();
-       check_water_tank();
+        check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         rev_time = duration - curr_time;
@@ -596,8 +598,9 @@ void DR_porous_PROCESS(uint32_t duration)
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
             break;
         }
 
@@ -751,8 +754,8 @@ void DR_all_prgm_PROCESS(uint32_t duration)
 
     while (curr_time < duration)
     {
-         Check_Error();
-       check_water_tank();
+        Check_Error();
+        check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         rev_time = duration - curr_time;
@@ -764,8 +767,9 @@ void DR_all_prgm_PROCESS(uint32_t duration)
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
             break;
         }
 
@@ -916,9 +920,6 @@ void DR_all_prgm_PROCESS(uint32_t duration)
     PORTJ &= ~_BV(v2);  // 4th valve
 }
 
-
-
-
 void DR_bnd_PROCESS(uint32_t duration)
 {
     _cuurent_time = millis();
@@ -931,8 +932,8 @@ void DR_bnd_PROCESS(uint32_t duration)
     while (curr_time < duration)
     {
         Check_Error();
-       check_water_tank();
-       
+        check_water_tank();
+
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         rev_time = duration - curr_time;
@@ -944,8 +945,9 @@ void DR_bnd_PROCESS(uint32_t duration)
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
             break;
         }
 
@@ -1019,7 +1021,6 @@ void DR_bnd_PROCESS(uint32_t duration)
             PORTJ |= _BV(v4);  // 4th valve
         }
 
-
         if (rev_time < 85000) // 90000
         {
             PORTH |= _BV(vac); // vaccume pump on
@@ -1056,19 +1057,15 @@ void DR_bnd_PROCESS(uint32_t duration)
     PORTJ &= ~_BV(v2);  // 4th valve
 }
 
-
-
-
-
 void PASS_PROCESS(void)
 {
     PORTJ |= _BV(v2);
-    PORTC &= ~_BV(steam); // steam generator off 
+    PORTC &= ~_BV(steam); // steam generator off
     delay(10000);
     // PORTJ &= ~_BV(v2);
     print_pass();
-     Beep_Toggle( 10, 200);
-     EEPROM.write(0, 0);
+    Beep_Toggle(10, 200);
+    EEPROM.write(0, 0);
 }
 
 /****************************** common function *****************************************/
@@ -1090,7 +1087,7 @@ void CRE_PROCESS(uint32_t duration, uint8_t process_num)
     while (curr_time < duration)
     {
         Check_Error();
-       check_water_tank();
+        check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         mm_ = curr_time / 60000; // Total minutes
@@ -1101,8 +1098,9 @@ void CRE_PROCESS(uint32_t duration, uint8_t process_num)
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
             break;
         }
 
@@ -1218,7 +1216,7 @@ void CUA_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
     while (curr_time < duration)
     {
         Check_Error();
-       check_water_tank();
+        check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         rev_time = duration - curr_time;
@@ -1230,8 +1228,9 @@ void CUA_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
             break;
         }
 
@@ -1297,7 +1296,7 @@ void CUA_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
         /*****************************  main Control **************************/
         PORTH |= _BV(vac); // vaccume pump on
         PORTJ |= _BV(v4);  // 4th valve on
-        PORTJ &= ~_BV(v3); //v3 valve off
+        PORTJ &= ~_BV(v3); // v3 valve off
         /***********************  Relay control **********************/
 
         /********************************************************************/
@@ -1332,7 +1331,7 @@ void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
 {
 
     PORTJ &= ~_BV(v2);
-    PORTJ &= ~ _BV(v4);
+    PORTJ &= ~_BV(v4);
 
     _cuurent_time = millis();
     _last_time = _cuurent_time;
@@ -1346,7 +1345,7 @@ void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
     while (curr_time < duration) // while (pressure <= _pressure)
     {
         Check_Error();
-       check_water_tank();
+        check_water_tank();
 
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
@@ -1358,8 +1357,10 @@ void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
 
         // if (!RS)
         // {
-        //     Serial1.print("Intrupt generated");
-        //     process_status = -1;
+        //           Serial1.print("Forced exit");
+        Check_Error();
+        //                 process_status = 99;
+        Check_Error();
         //     break;
         // }
 
@@ -1417,10 +1418,10 @@ void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
         /*******************  Break Condition *******************/
         if (pressure > _pressure)
         {
-            pressure=mpx();
-         if(pressure > _pressure)  
-            Serial1.println("presuure cutt off");
-            PORTJ &= ~_BV(v1);    // 1ST
+            pressure = mpx();
+            if (pressure > _pressure)
+                Serial1.println("presuure cutt off");
+            PORTJ &= ~_BV(v1); // 1ST
             PORTJ |= _BV(v3);
             PORTH &= ~_BV(motor); // 1ST // motor
             break;
@@ -1442,10 +1443,11 @@ void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
             /*********** turn on motor ****************/
             while (millis() - motor_time < motor_on_time)
             {
-                if(steam_generator_temp > 130)
+                if (steam_generator_temp > 130)
                 {
-                PORTH |= _BV(motor);
-                }else
+                    PORTH |= _BV(motor);
+                }
+                else
                 {
                     PORTH &= ~_BV(motor);
                 }
@@ -1482,11 +1484,10 @@ void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
 
     /********* turn off all valve & Relay **********/
     // PORTJ &= ~_BV(v3);
-    PORTJ &= ~_BV(v1);    // 1ST
+    PORTJ &= ~_BV(v1); // 1ST
     PORTJ |= _BV(v3);
     PORTH &= ~_BV(motor); // 1ST // motor
 }
-
 
 /********************* all test cycle program function ********************/
 void first_all_test_process()
@@ -1502,7 +1503,7 @@ void first_all_test_process()
     while (curr_time < 40000)
     {
         Check_Error();
-       check_water_tank();
+        check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         mm_ = curr_time / 60000; // Total minutes
@@ -1513,8 +1514,9 @@ void first_all_test_process()
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
             break;
         }
 
@@ -1563,7 +1565,7 @@ void second_all_test_process()
     while (curr_time < 60000)
     {
         Check_Error();
-       check_water_tank();
+        check_water_tank();
         /******************  convert time  in minutes and seconds **********************/
         curr_time = millis() - _cuurent_time;
         mm_ = curr_time / 60000; // Total minutes
@@ -1574,8 +1576,9 @@ void second_all_test_process()
 
         if (!RS)
         {
-            Serial1.print("Intrupt generated");
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
             break;
         }
 
@@ -1611,183 +1614,3 @@ void second_all_test_process()
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-// void test_CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
-// {
-
-//     PORTJ &= ~_BV(v2);
-//     PORTJ &= ~ _BV(v4);
-
-//     _cuurent_time = millis();
-//     _last_time = _cuurent_time;
-//     motor_time = _cuurent_time;
-
-//     /***************************  Run for duration time ********************/
-//     curr_time = millis() - _cuurent_time;
-
-//     // pressure = mpx();
-//     // delay(100);
-//     while (curr_time < duration) // while (pressure <= _pressure)
-//     {
-//         Serial1.println("running..");
-
-//         // if (curr_time > 600)
-//         // {
-//         //     Serial1.println("error");
-//         //     break;
-//         // }
-
-//         /******************  convert time  in minutes and seconds **********************/
-//         curr_time = millis() - _cuurent_time;
-//         mm_ = curr_time / 60000; // Total minutes
-//         ss_ = curr_time % 60000; // Total seconds
-//         ss_ = ss_ / 1000;
-
-//         /********* Check if stop button pressed ******************/
-
-//         // if (!RS)
-//         // {
-//         //     Serial1.print("Intrupt generated");
-//         //     process_status = -1;
-//         //     break;
-//         // }
-
-//         /********* Display current cycle Status on 7-Segment ******************/
-//         if (millis() - _last_time >= 5000)
-//         {
-//             _last_time = millis();
-//             MAX7219_Clear(2);
-//             while (millis() - _last_time < 700)
-//             {
-//                 print_pr(process_num);
-//             }
-
-//             _last_time = millis();
-//         }
-
-//         /************ Show Time on 7-Segment *******************/
-
-//         _m4 = mm_ / 10; // 4th digit
-//         _m3 = mm_ % 10; // 3rd digit
-//         _s2 = ss_ / 10; // 2nd digit
-//         _s1 = ss_ % 10; // 1st digit
-
-//         show_time(_m4, _m3, _s2, _s1);
-
-//         /************ Get current Temp & Pressure *******************/
-//         pressure = mpx();
-//         outer_body_temp = TS1();
-//         steam_generator_temp = TS3();
-
-//         if (print_debug)
-//         {
-
-//             Serial1.print("current process running :");
-//             Serial1.print(process_status);
-//             // // Serial1.println("...HE...");
-
-//             Serial1.print("pressure : ");
-//             Serial1.print(pressure);
-//             Serial1.println(" kPa");
-
-//             Serial1.print("Outer Body :");
-//             Serial1.println(outer_body_temp);
-
-//             Serial1.print("Steam Generator : ");
-//             Serial1.println(steam_generator_temp);
-
-//             Serial1.println("....................... ");
-//             Serial1.print("Time : ");
-//             Serial1.print(mm_);
-//             Serial1.print(" : "); // minutes
-//             Serial1.println(ss_);
-//         }
-
-//         /*******************  Break Condition *******************/
-//         // if (pressure > _pressure)
-//         // {
-//         //     pressure=mpx();
-//         //  if(pressure > _pressure)  
-//         //     Serial1.println("presuure cutt off");
-//         //     PORTJ &= ~_BV(v1);    // 1ST
-//         //     PORTJ |= _BV(v3);
-//         //     PORTH &= ~_BV(motor); // 1ST // motor
-//         //     break;
-//         // }
-
-//         /*****************************  Valve Control **************************/
-//         PORTJ |= _BV(v1);
-//         PORTJ |= _BV(v3);
-//         // PORTJ |= _BV(v4);
-//         /***********************  Relay control **********************/
-//         // PORTH |= _BV(motor); // 1ST // motor motor_time
-//         // delay(motor_on_time);
-//         // PORTH &= ~_BV(motor); // 1ST // motor
-
-//         if (millis() - motor_time >= motor_off_time)
-//         {
-//             motor_time = millis(); // load current time
-
-//             /*********** turn on motor ****************/
-//             while (millis() - motor_time < motor_on_time)
-//             {
-//                 PORTH |= _BV(motor);
-//             }
-//             /*********** turn off motor ****************/
-//             PORTH &= ~_BV(motor);
-//             motor_time = millis();
-//         }
-
-//         /***********************************************************************/
-//         if (steam_generator_temp >= max_steam_generator_temp)
-//         {
-
-//             PORTC &= ~_BV(steam);
-//         }
-//         else
-//         {
-//             PORTC |= _BV(steam);
-//         }
-
-//         /* Heat Ring */
-//         if (outer_body_temp >= max_outer_body_temp)
-//         {
-
-//             PORTC &= ~_BV(heat);
-//         }
-//         else
-//         {
-//             PORTC |= _BV(heat);
-//         }
-//     }
-
-//     // Serial1.println("breaked.....");
-
-//     /********* turn off all valve & Relay **********/
-//     // PORTJ &= ~_BV(v3);
-//     PORTJ &= ~_BV(v1);    // 1ST
-//     PORTJ |= _BV(v3);
-//     PORTH &= ~_BV(motor); // 1ST // motor
-// }
-
-
-
-
-// error code
-
-// void error_code_check(void)
-// {
-
-
-
-
-// }
