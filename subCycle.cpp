@@ -14,12 +14,12 @@ float steam_generator_temp;
 float outer_body_temp;
 float chamber_temp;
 float pressure;
-
+extern uint8_t error_status;
 /************** temp cut off  condition ******************/
 uint8_t max_steam_generator_temp = 180;
 uint8_t max_outer_body_temp = 90;
-uint16_t motor_on_time = 120;   // 150 fine
-uint16_t motor_off_time = 1000; // increase 200 ms
+uint16_t motor_on_time = 100;   // 150 fine
+uint16_t motor_off_time = 2000; // increase 200 ms
 uint16_t _stPres = 223;
 /***************  variable for display time on 7-segment *******************/
 uint32_t _cuurent_time;
@@ -69,6 +69,15 @@ void HE_PROCESS(uint32_t duration)
             Check_Error();
             break;
         }
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
+            break;
+        }
 
         /********* Display current cycle Status on 7-Segment ******************/
         if (millis() - _last_time >= 5000)
@@ -99,7 +108,7 @@ void HE_PROCESS(uint32_t duration)
 
         if (print_debug)
         {
-
+            
             Serial1.print("current process running :");
             Serial1.print(process_status);
             // Serial1.println("...HE...");
@@ -171,12 +180,20 @@ void ST_PROCESS(uint32_t duration, uint32_t _prr)
         ss_ = ss_ / 1000;
 
         /********* Check if stop button pressed ******************/
-
         if (!RS)
         {
+            Serial1.print("Forced exit");
             process_status = 99;
             Check_Error();
-            Serial1.print("Forced exit");
+            break;
+        }
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
             break;
         }
 
@@ -305,12 +322,20 @@ void RE_PROCESS(uint32_t duration)
         ss_ = ss_ / 1000;
 
         /********* Check if stop button pressed ******************/
-
         if (!RS)
         {
             Serial1.print("Forced exit");
             process_status = 99;
             Check_Error();
+            break;
+        }
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
             break;
         }
 
@@ -428,7 +453,6 @@ void DR_PROCESS(uint32_t duration)
         ss_ = ss_ / 1000;
 
         /********* Check if stop button pressed ******************/
-
         if (!RS)
         {
             Serial1.print("Forced exit");
@@ -436,7 +460,15 @@ void DR_PROCESS(uint32_t duration)
             Check_Error();
             break;
         }
-
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
+            break;
+        }
         /********* Display current cycle Status on 7-Segment ******************/
         if (millis() - _last_time >= 5000)
         {
@@ -603,7 +635,15 @@ void DR_porous_PROCESS(uint32_t duration)
             Check_Error();
             break;
         }
-
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
+            break;
+        }
         /********* Display current cycle Status on 7-Segment ******************/
         if (millis() - _last_time >= 5000)
         {
@@ -942,7 +982,6 @@ void DR_bnd_PROCESS(uint32_t duration)
         ss_ = ss_ / 1000;
 
         /********* Check if stop button pressed ******************/
-
         if (!RS)
         {
             Serial1.print("Forced exit");
@@ -950,7 +989,15 @@ void DR_bnd_PROCESS(uint32_t duration)
             Check_Error();
             break;
         }
-
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
+            break;
+        }
         /********* Display current cycle Status on 7-Segment ******************/
         if (millis() - _last_time >= 5000)
         {
@@ -1103,7 +1150,15 @@ void CRE_PROCESS(uint32_t duration, uint8_t process_num)
             Check_Error();
             break;
         }
-
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
+            break;
+        }
         /********* Display current cycle Status on 7-Segment ******************/
         if (millis() - _last_time >= 5000)
         {
@@ -1204,6 +1259,10 @@ void CUA_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
     PORTJ &= ~_BV(v1);
     PORTJ &= ~_BV(v2);
 
+    // PORTH &= ~_BV(motor);
+    // PORTC &= ~_BV(steam);
+    // PORTC &= ~_BV(heat);
+
     Serial1.print(" duration :");
     Serial1.println(duration);
 
@@ -1233,7 +1292,15 @@ void CUA_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
             Check_Error();
             break;
         }
-
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
+            break;
+        }
         /********* Display current cycle Status on 7-Segment ******************/
         if (millis() - _last_time >= 5000)
         {
@@ -1355,15 +1422,22 @@ void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
 
         /********* Check if stop button pressed ******************/
 
-        // if (!RS)
-        // {
-        //           Serial1.print("Forced exit");
-        Check_Error();
-        //                 process_status = 99;
-        Check_Error();
-        //     break;
-        // }
-
+        if (!RS)
+        {
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
+            break;
+        }
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
+            break;
+        }
         /********* Display current cycle Status on 7-Segment ******************/
         if (millis() - _last_time >= 5000)
         {
@@ -1443,7 +1517,7 @@ void CPR_PROCESS(uint32_t duration, int16_t _pressure, uint8_t process_num)
             /*********** turn on motor ****************/
             while (millis() - motor_time < motor_on_time)
             {
-                if (steam_generator_temp > 130)
+                if (steam_generator_temp > 115)
                 {
                     PORTH |= _BV(motor);
                 }
@@ -1581,6 +1655,15 @@ void second_all_test_process()
             Check_Error();
             break;
         }
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
+            break;
+        }
 
         /********* Display current cycle Status on 7-Segment ******************/
         // if (millis() - _last_time >= 5000)
@@ -1613,4 +1696,3 @@ void second_all_test_process()
         PORTJ |= _BV(v4);
     }
 }
-

@@ -40,10 +40,10 @@ void unwrapped_cycle(void)
     {
     case 1:
         start_process_led_glow();
-        _timeout = 400000; // 6:40  // 400000
+        // _timeout = 360000; // 6:40  // 6:00
         Serial1.print(" current process :");
         Serial1.println(process_status);
-       HE_PROCESS(_timeout);
+        HE_PROCESS(_timeout);
         process_status = 2;
         break;
     case 2:

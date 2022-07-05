@@ -13,7 +13,6 @@ extern uint8_t error_status;
 extern int8_t process_status;
 extern uint8_t prgrm_sw;
 extern uint8_t test_sw;
-
 void Timer1_init(void)
 {
   // Timer Control - 2 registers:
@@ -593,9 +592,9 @@ extern float outer_body_temp;
 extern float chamber_temp;
 extern float pressure;
 
-uint8_t over_steam_generator_temp = 220;
-uint8_t over_outer_body_temp = 170;
-uint8_t over_chamber_temp = 136;
+uint8_t over_steam_generator_temp = 250;
+uint8_t over_outer_body_temp = 200;
+uint8_t over_chamber_temp = 140;
 uint8_t over_pressure = 230;
 
 uint8_t InChamberTemp_High = 140;
@@ -673,15 +672,28 @@ void Check_Error()
 
   if (door_status == 0 && RS == 1)
   {
-    EEPROM.update(0, 0);
-
+   EEPROM.update(0, 0);
+    // TRUN OFF ALL AC
+    PORTJ |= _BV(v2);
+    PORTJ &= ~_BV(v3);
+    PORTH &= ~_BV(vac);
+    PORTH &= ~_BV(motor);
+    PORTC &= ~_BV(steam);
+    PORTC &= ~_BV(heat);
+    Serial1.println("er06 all ac off");
     error_status = 1;
     while (!door_status)
     {
+      beep_2();
       door_status = digitalRead(48);
+      Serial1.println("waiting to close door");
       print_code(0, 6);
-      RS = 0;
+      // RS = 0;
     }
+    // while (RS==0)
+    // {
+    //    RS = 0;
+    // }
   }
 
   // Working overtime
@@ -708,16 +720,16 @@ void Check_Error()
     }
   }
   // In-chamber sensors temp. too high or too low
-  if (chamber_temp > InChamberTemp_High || chamber_temp > InChamberTemp_Low)
-  {
-    EEPROM.update(0, 0);
-    error_status = 1;
-    while (digitalRead(48))
-    {
-      print_code(0, 9);
-      RS = 0;
-    }
-  }
+  // if (chamber_temp > InChamberTemp_High || chamber_temp > InChamberTemp_Low)
+  // {
+  //   EEPROM.update(0, 0);
+  //   error_status = 1;
+  //   while (digitalRead(48))
+  //   {
+  //     print_code(0, 9);
+  //     RS = 0;
+  //   }
+  // }
 
   // Temp. and Pressure doesn't match
 
@@ -753,6 +765,8 @@ void Check_Error()
 
   if (steam_generator_temp > over_steam_generator_temp)
   {
+    Serial1.print("steam_generator_temp");
+    Serial1.println(steam_generator_temp);
     EEPROM.update(0, 0);
     error_status = 1;
 
@@ -772,6 +786,7 @@ void Check_Error()
     while (digitalRead(48))
     {
       print_code(0, 1);
+
       RS = 0;
     }
     process_status = 1;
@@ -784,8 +799,12 @@ void door_current_status_print()
 
   if (door_status)
   {
+    // beep_2();
     // Serial1.println("door close");
+    // Serial1.println(door_status);
     print_load();
+      
+     
   }
   else
   {

@@ -50,13 +50,14 @@ void Disp_board_config(void)
   //  SPI.begin();
 
   pinMode(LOAD_PIN, OUTPUT);
+  pinMode(40, OUTPUT);
   SPI.begin();
 
   //  maxTransfer(OP_DISPLAYTEST, 0x01,1);
   //  maxTransfer(OP_DISPLAYTEST, 0x01,2);
   //  delay(1000);
-  //  maxTransfer(OP_DISPLAYTEST, 0x00,1);
-  //  maxTransfer(OP_DISPLAYTEST, 0x00,2);
+   maxTransfer(OP_DISPLAYTEST, 0x00,1);
+   maxTransfer(OP_DISPLAYTEST, 0x00,2);
   //  delay(1000);
   // Enable mode B
   maxTransfer(OP_DECODEMODE, 0x00, 1); // No decoding
@@ -75,6 +76,7 @@ void Disp_board_config(void)
   maxTransfer(OP_SHUTDOWN, 0x01, 2); // enable Second IC
                                      // delay(1000);
   MAX7219_Clear(1);
+  delay(100);
   MAX7219_Clear(2);
   //   delay(1000);
 }
@@ -367,9 +369,9 @@ void print_load_blink()
   set_char(2, 97, 2, false); // 65
   set_char(3, 79, 2, false); // 79
   set_char(4, 76, 2, false); // 76
-  delay(1000);
+  delay(900);
   MAX7219_Clear(2);
-  delay(1000);
+  delay(900);
 }
 void print_he(void)
 {

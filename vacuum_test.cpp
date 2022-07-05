@@ -8,7 +8,7 @@ extern uint8_t dev;
 // extern uint8_t RS;
 
 #define print_debug 1
-
+extern uint8_t error_status;
 extern int8_t process_status;
 extern uint32_t _cuurent_time;
 extern uint32_t _last_time;
@@ -84,10 +84,20 @@ void VACCUME_PROCESS(void)
         ss_ = ss_ / 1000;
 
         /********* Check if stop button pressed ******************/
-
         if (!RS)
         {
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
+            break;
+        }
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
             break;
         }
 
@@ -181,10 +191,20 @@ void STEADY_PROCESS(void)
         ss_ = ss_ / 1000;
 
         /********* Check if stop button pressed ******************/
-
         if (!RS)
         {
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
+            break;
+        }
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
             break;
         }
 
@@ -277,10 +297,20 @@ void TESTING_PROCESS(void)
         ss_ = ss_ / 1000;
 
         /********* Check if stop button pressed ******************/
-
         if (!RS)
         {
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
+            break;
+        }
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
             break;
         }
 
@@ -373,10 +403,20 @@ void VAC_PASS_PROCESS(void)
         ss_ = ss_ / 1000;
 
         /********* Check if stop button pressed ******************/
-
         if (!RS)
         {
-            process_status = -1;
+            Serial1.print("Forced exit");
+            process_status = 99;
+            Check_Error();
+            break;
+        }
+        if (error_status)
+        {
+            // Serial1.print("Forced exit");
+            // process_status = 99;
+            // Check_Error();
+            error_status = 0;
+            RS = 0;
             break;
         }
 

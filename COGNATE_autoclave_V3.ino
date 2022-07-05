@@ -1,6 +1,6 @@
 #include <Sodaq_PcInt.h>
 #include "BoardConfig.h"
-
+#include "max.h"
 #include <EEPROM.h>
 // #include "ErrorList.h"
 
@@ -62,7 +62,7 @@ ISR(TIMER1_OVF_vect)
   {
     count = 0;
     _pres = mpx();
-    _temp = TS2() + 0.5 - 1; // +0.5
+    _temp = TS2() + 0.5; // +0.5
     lcd1_temp(_temp);
     lcd2_press(_pres);
     TIFR1 |= 0x01;
@@ -319,6 +319,16 @@ void check_water_tank()
   }
 }
 
+
+/**
+ * @brief setting Rtc time
+ * 
+ */
+
+/*********************************** RTC Time Set ********************************************/
+
+/********************************** end rtc function ***************************/
+
 //*******************************  check selected   Program ***********************************************************//
 void check_selected_program()
 {
@@ -379,8 +389,67 @@ void check_selected_program()
  * @brief condition for check ERROR 98 -->  AUTOMATOC POWER SHUT DOWN DURING RUNNING CYCLE
  *
  */
+
+void vaccume_98()
+{
+  uint32_t mm_;
+  uint32_t ss_;
+
+  uint8_t _m4;
+  uint8_t _m3;
+  uint8_t _s2;
+  uint8_t _s1;
+
+  uint32_t _curr_new_time = millis();
+  uint32_t _last_time = millis();
+  uint32_t _last_time_new = millis();
+  PORTJ &= ~_BV(v2);
+  PORTJ &= ~_BV(v3);
+  PORTJ |= _BV(v4);
+  PORTH |= _BV(vac);
+  PORTH &= ~_BV(motor);
+  PORTH &= ~_BV(steam);
+  PORTH &= ~_BV(heat);
+
+  _last_time = millis() - _curr_new_time;
+  Serial1.print("call vaccum 98 function : ");
+  while (_last_time < 240000)
+  {
+    PORTH |= _BV(vac); // vaccume pump on
+    PORTJ |= _BV(v4);  // 4th valve on
+    _last_time = millis() - _curr_new_time;
+    _last_time_new = 240000 - _last_time;
+    mm_ = _last_time_new / 60000; // Total minutes
+    ss_ = _last_time_new % 60000; // Total seconds
+    ss_ = ss_ / 1000;
+
+    _m4 = mm_ / 10; // 4th digit
+    _m3 = mm_ % 10; // 3rd digit
+    _s2 = ss_ / 10; // 2nddigit
+    _s1 = ss_ % 10; // 1st digit
+    Serial1.println("....................... ");
+    Serial1.print("Time : ");
+    Serial1.print(mm_);
+    Serial1.print(" : "); // minutes
+    Serial1.println(ss_);
+
+    show_time(_m4, _m3, _s2, _s1);
+  }
+  // RS = 0;
+  // print_load_blink();
+  PORTJ |= _BV(v2);
+  PORTJ |= _BV(v3);
+  PORTJ &= ~_BV(v4);
+  PORTH &= ~_BV(vac);
+  PORTH &= ~_BV(motor);
+  PORTC &= ~_BV(steam);
+  PORTC &= ~_BV(heat);
+  check_selected_program();
+}
+
 void find_error()
 {
+
   eep_data_0 = EEPROM.read(0);
   if (eep_data_0)
   {
@@ -390,15 +459,17 @@ void find_error()
     PORTJ &= ~_BV(v3);
     PORTH &= ~_BV(vac);
     PORTH &= ~_BV(motor);
-    PORTH &= ~_BV(steam);
-    PORTH &= ~_BV(heat);
+    PORTC &= ~_BV(steam);
+    PORTC &= ~_BV(heat);
 
-    while (digitalRead(48))
+    while (!RS)
     {
+      Serial1.print("error 98 display : ");
       print_code(9, 8);
     }
-  }
 
+    vaccume_98();
+  }
   else
   {
 
@@ -414,11 +485,12 @@ void find_error()
       PORTJ &= ~_BV(v3);
       PORTH &= ~_BV(vac);
       PORTH &= ~_BV(motor);
-      PORTH &= ~_BV(steam);
-      PORTH &= ~_BV(heat);
+      PORTC &= ~_BV(steam);
+      PORTC &= ~_BV(heat);
 
       Check_Error();
       error_status = 0;
+      //  print_load();
     }
   }
 }
@@ -439,6 +511,7 @@ void find_error()
 // }
 
 //*******************************  Setup  Program ***********************************************************//
+uint32_t _timeout = 0;
 void setup()
 {
 
@@ -451,6 +524,12 @@ void setup()
   Disp_board_config();
   Timer1_init();
   eep_data_0 = EEPROM.read(0);
+  Serial1.print("checking error 98 ");
+  RS = 0;
+  find_error();
+  EEPROM.write(0, 1);
+  RS = 0;
+  PORTH &= ~_BV(vac);
   Serial1.print("eprom data  ");
   Serial1.println(eep_data_0);
   if (eep_data_0 != 0)
@@ -463,7 +542,7 @@ void setup()
 
   PORTH |= _BV(fan);
   PORTJ |= _BV(v2);
-  delay(15000);
+  delay(25000);
 
   PORTH &= ~_BV(vac);
   PORTJ &= ~_BV(v2);
@@ -482,6 +561,13 @@ void loop()
   // Serial1.println(door_status);
 
   door_status = digitalRead(48);
+  // while (!door_status)
+  //   {
+  //     door_status = digitalRead(48);
+  //     print_code(0, 6);
+  //     RS = 0;
+  //     // beep_2();
+  //   }
   find_error();
   check_selected_program();
   // check_water_tank();
