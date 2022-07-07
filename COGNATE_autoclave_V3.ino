@@ -371,7 +371,7 @@ uint8_t change_data(uint8_t _data_)
   {
     // delay(20);
     Serial1.println("test button press");
-    // delay(300);
+    delay(2000);
     _data_--;
     // delay(300);
     // return _data_;
@@ -381,7 +381,7 @@ uint8_t change_data(uint8_t _data_)
   else if (!(PINK & (1 << 1)))
   {
     Serial1.println("start button press");
-    // delay(300);
+    delay(2000);
     _data_++;
     //  delay(300);
     // return _data_;
@@ -409,7 +409,7 @@ uint8_t get_data_rtc_fields(uint8_t pos)
 {
 
   static uint8_t d1 = 22, d2 = 6, d3 = 7, d4 = 15, d5 = 10, d6 = 5;
-
+  delay(3000);
   switch (pos)
   {
   case 1:
@@ -557,12 +557,13 @@ void set_time_rtc(void)
       status_rtc_update = ((!(PINL & (1 << 4))) && (!(PINL & (1 << 6))));
       if (!status_rtc_update)
       {
-        delay(1000);
+        // delay(1000);
         Serial1.println("exit rtc");
         break;
       }
-    }
 
+    }
+    delay(1000);
     Serial1.println("set rct time");
     // pl4 39
     // pl6 41
@@ -809,11 +810,60 @@ void vaccume_98()
 void find_error()
 {
 
-  eep_data_0 = EEPROM.read(0);
-  if (eep_data_0)
-  {
+  // // eep_data_0 = EEPROM.read(0);
+  // if (EEPROM.read(0))
+  // {
 
-    EEPROM.update(0, 0);
+  //   EEPROM.update(0, 0);
+  //   PORTJ |= _BV(v2);
+  //   PORTJ &= ~_BV(v3);
+  //   PORTH &= ~_BV(vac);
+  //   PORTH &= ~_BV(motor);
+  //   PORTC &= ~_BV(steam);
+  //   PORTC &= ~_BV(heat);
+
+  //   while (!RS)
+  //   {
+  //     Serial1.print("############error 98 display : ");
+  //     print_code(9, 8);
+  //   }
+
+  //   vaccume_98();
+  // }
+  // else
+  // {
+
+  //   if (error_status == 0)
+  //   {
+  //     PORTJ |= _BV(v2);
+  //     door_current_status_print();
+  //   }
+
+  //   else
+  //   {
+  //     PORTJ |= _BV(v2);
+  //     PORTJ &= ~_BV(v3);
+  //     PORTH &= ~_BV(vac);
+  //     PORTH &= ~_BV(motor);
+  //     PORTC &= ~_BV(steam);
+  //     PORTC &= ~_BV(heat);
+
+  //     Check_Error();
+  //     error_status = 0;
+  //      print_load();
+  //   }
+  // }
+
+  if (error_status == 0)
+  {
+    PORTJ |= _BV(v2);
+    door_current_status_print();
+    Serial1.println("error status 0");
+  }
+
+  else
+  {
+    Serial1.println("error status 1");
     PORTJ |= _BV(v2);
     PORTJ &= ~_BV(v3);
     PORTH &= ~_BV(vac);
@@ -821,36 +871,9 @@ void find_error()
     PORTC &= ~_BV(steam);
     PORTC &= ~_BV(heat);
 
-    while (!RS)
-    {
-      Serial1.print("error 98 display : ");
-      print_code(9, 8);
-    }
-
-    vaccume_98();
-  }
-  else
-  {
-
-    if (error_status == 0)
-    {
-      PORTJ |= _BV(v2);
-      door_current_status_print();
-    }
-
-    else
-    {
-      PORTJ |= _BV(v2);
-      PORTJ &= ~_BV(v3);
-      PORTH &= ~_BV(vac);
-      PORTH &= ~_BV(motor);
-      PORTC &= ~_BV(steam);
-      PORTC &= ~_BV(heat);
-
-      Check_Error();
-      error_status = 0;
-      //  print_load();
-    }
+    Check_Error();
+    error_status = 0;
+    print_load();
   }
 }
 
@@ -882,15 +905,41 @@ void setup()
   board_init();
   Disp_board_config();
   Timer1_init();
-  eep_data_0 = EEPROM.read(0);
+  // EEPROM.write(0, 0);
+  // EEPROM.update(0, 0);
+  delay(10000);
+  /******************************** check er98 **********************/
+  if (EEPROM.read(0) == 1)
+  {
+    EEPROM.update(0, 0);
+    PORTJ |= _BV(v2);
+    PORTJ &= ~_BV(v3);
+    PORTH &= ~_BV(vac);
+    PORTH &= ~_BV(motor);
+    PORTC &= ~_BV(steam);
+    PORTC &= ~_BV(heat);
+
+    while (!RS)
+    {
+      eep_data_0 = EEPROM.read(0);
+      Serial1.print("eprom data  ");
+      Serial1.println(eep_data_0);
+      // Serial1.print("....error 98 display : ");
+      print_code(9, 8);
+    }
+    vaccume_98();
+  }
+  //
   Serial1.print("checking error 98 ");
-  RS = 0;
-  // find_error();
-  EEPROM.write(0, 1);
-  RS = 0;
-  PORTH &= ~_BV(vac);
+  eep_data_0 = EEPROM.read(0);
   Serial1.print("eprom data  ");
   Serial1.println(eep_data_0);
+  RS = 0;
+  // find_error();
+  // EEPROM.write(0, 1);
+  RS = 0;
+  PORTH &= ~_BV(vac);
+
   if (eep_data_0 != 0)
   {
     print_code(9, 8);
@@ -915,36 +964,40 @@ void setup()
 //*******************************  Main  Program ***********************************************************//
 void loop()
 {
+  // eep_data_0 = EEPROM.read(0);
+  // Serial1.print("eprom data  ");
+  // Serial1.println(eep_data_0);
+  // RS = 0;
   if (int_status)
   {
     sei();
     int_status = 0;
   }
-  // MAX7219_Clear(1);
-  // MAX7219_Clear(2);
-  // delay(200);
-  // print_s3_rtc(14);
-  // print_s1_rtc();
-  // print_s2_rtc(3);
-
-  // delay(500);
   set_time_rtc();
   //   // Serial1.print("  door_status : ");
   //   // Serial1.println(door_status);
 
   door_status = digitalRead(48);
-  // while (!door_status)
-  //   {
-  //     door_status = digitalRead(48);
-  //     print_code(0, 6);
-  //     RS = 0;
-  //     // beep_2();
-  //   }
-  // find_error();
+  while (!door_status)
+  {
+    if (RS)
+    {
+      door_status = digitalRead(48);
+      print_code(0, 6);
+      RS = 0;
+      beep_4();
+    }
+    else
+    {
+      door_current_status_print();
+      beep_2();
+    }
+  }
+  find_error();
   check_selected_program();
-  // check_water_tank();
+  check_water_tank();
 
-  Serial1.println("...........Please start  program..............");
+  // Serial1.println("...........Please start  program..............");
 
   if (RS)
   {

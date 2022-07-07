@@ -800,15 +800,13 @@ void door_current_status_print()
   if (door_status)
   {
     // beep_2();
-    // Serial1.println("door close");
+    Serial1.println("door close");
     // Serial1.println(door_status);
     print_load();
-      
-     
-  }
+   }
   else
   {
-    // Serial1.println("door open");
+    Serial1.println("door open");
     print_load_blink();
     //  Beep_Toggle(1000);
   }
