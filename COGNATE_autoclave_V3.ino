@@ -5,7 +5,7 @@
 // #include "ErrorList.h"
 
 /************** Global Variable  ********************/
-
+uint8_t int_status = 0;
 uint8_t dev = 2;
 // uint8_t current_cycle = 2;
 uint8_t bypass_temp_SG = 150;
@@ -358,32 +358,47 @@ void print_s1_rtc(void)
   set_char(1, 116, 1, false);
 }
 
+uint32_t _time = 0;
+
 uint8_t change_data(uint8_t _data_)
 {
+
+  // if ((millis() - _time) > 20)
+  // {
+  // delay(700);
   // if (!digitalRead(45)) // prgm
   if (!(PINL & (1 << 6)))
   {
     // delay(20);
     Serial1.println("test button press");
-    delay(300);
+    // delay(300);
     _data_--;
-    return _data_;
+    // delay(300);
+    // return _data_;
   }
 
   // if (!digitalRead(43)) // test  /// 63 -pk1 start
   else if (!(PINK & (1 << 1)))
   {
     Serial1.println("start button press");
-    delay(300);
+    // delay(300);
     _data_++;
-    return _data_;
+    //  delay(300);
+    // return _data_;
   }
-  else
-  {
-    return _data_;
-  }
-}
+  // else
+  // {
+  //   // return _data_;
+  // }
+  // Serial1.print("......................._data_.....................");
 
+  // Serial1.println(_data_);
+
+  // _time = millis();
+  return _data_;
+  // }
+  // _time = millis();
+}
 #define june 6
 #define november 11
 #define april 4
@@ -398,7 +413,7 @@ uint8_t get_data_rtc_fields(uint8_t pos)
   switch (pos)
   {
   case 1:
-    // Serial1.println("pos 1: ");
+    Serial1.println("pos 1: ");
     d1 = change_data(d1);
     return d1;
     break;
@@ -542,10 +557,12 @@ void set_time_rtc(void)
       status_rtc_update = ((!(PINL & (1 << 4))) && (!(PINL & (1 << 6))));
       if (!status_rtc_update)
       {
+        delay(1000);
         Serial1.println("exit rtc");
         break;
       }
     }
+
     Serial1.println("set rct time");
     // pl4 39
     // pl6 41
@@ -560,7 +577,8 @@ void set_time_rtc(void)
     uint8_t stop = 0;
     while (!stop) // exit out -7- start press
     {
-      // Serial1.print("Waiting for exit : ");
+      cli();
+      Serial1.print("Waiting for exit : ");
       // Serial1.println(num);
       // EEPROM.read(1);
       if (cnt == 7)
@@ -606,7 +624,7 @@ void set_time_rtc(void)
       {
       case 1:
         /* display & save year */
-        // Serial1.print("case 1 : ");
+        Serial1.print("case 1 : ");
         s3_data = get_data_rtc_fields(cnt);
         print_s3_rtc(s3_data);
         break;
@@ -652,7 +670,9 @@ void set_time_rtc(void)
         {
           delay(300);
           stop = 1;
-          
+          sei();
+
+          int_status = 1;
         }
 
         break;
@@ -861,206 +881,211 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(3), ISR_water_fresh, CHANGE); // water sensor
   board_init();
   Disp_board_config();
-  // Timer1_init();
+  Timer1_init();
   eep_data_0 = EEPROM.read(0);
   Serial1.print("checking error 98 ");
   RS = 0;
   // find_error();
-  // EEPROM.write(0, 1);
-  // RS = 0;
-  // PORTH &= ~_BV(vac);
-  // Serial1.print("eprom data  ");
-  // Serial1.println(eep_data_0);
-  // if (eep_data_0 != 0)
-  // {
-  //   print_code(9, 8);
-  //   Serial1.print("eprom data  ");
-  //   Serial1.println(eep_data_0);
-  // }
-  // print_load();
+  EEPROM.write(0, 1);
+  RS = 0;
+  PORTH &= ~_BV(vac);
+  Serial1.print("eprom data  ");
+  Serial1.println(eep_data_0);
+  if (eep_data_0 != 0)
+  {
+    print_code(9, 8);
+    Serial1.print("eprom data  ");
+    Serial1.println(eep_data_0);
+  }
+  print_load();
 
-  // PORTH |= _BV(fan);
-  // PORTJ |= _BV(v2);
-  // delay(25000);
+  PORTH |= _BV(fan);
+  PORTJ |= _BV(v2);
+  delay(25000);
 
-  // PORTH &= ~_BV(vac);
-  // PORTJ &= ~_BV(v2);
-  // PORTH &= ~_BV(vac);
-  // PORTJ &= ~_BV(v3);
-  // PORTJ &= ~_BV(v4);
+  PORTH &= ~_BV(vac);
+  PORTJ &= ~_BV(v2);
+  PORTH &= ~_BV(vac);
+  PORTJ &= ~_BV(v3);
+  PORTJ &= ~_BV(v4);
 
-  // pinMode(48, INPUT);
+  pinMode(48, INPUT);
 }
 
 //*******************************  Main  Program ***********************************************************//
 void loop()
 {
+  if (int_status)
+  {
+    sei();
+    int_status = 0;
+  }
   // MAX7219_Clear(1);
   // MAX7219_Clear(2);
-  delay(200);
+  // delay(200);
   // print_s3_rtc(14);
   // print_s1_rtc();
   // print_s2_rtc(3);
 
-  delay(500);
+  // delay(500);
   set_time_rtc();
   //   // Serial1.print("  door_status : ");
   //   // Serial1.println(door_status);
 
-  //   door_status = digitalRead(48);
-  //   // while (!door_status)
-  //   //   {
-  //   //     door_status = digitalRead(48);
-  //   //     print_code(0, 6);
-  //   //     RS = 0;
-  //   //     // beep_2();
-  //   //   }
-  //   find_error();
-  //   check_selected_program();
-  //   // check_water_tank();
-
-  //   Serial1.println("...........Please start  program..............");
-
-  //   if (RS)
+  door_status = digitalRead(48);
+  // while (!door_status)
   //   {
-
-  //     delay(300);
-
-  //     // IF CONDITION activate only if drain water over flow or distel water empty or door open
-
-  //     eep_data_0 = EEPROM.read(0);
   //     door_status = digitalRead(48);
-  //     if ((drain == 1) || (fresh == 1) || (door_status == 0)) //|| (door_status == 1)
-  //     {
-
-  //       beep_4();
-  //       if (!door_status)
-  //         Serial1.println("PLEASE CLOSE THE DOOR");
-  //       if (fresh)
-  //         Serial1.println("distilled water empty");
-  //       if (drain)
-  //         Serial1.println("drain water tank full");
-  //       RS = 0;
-  //     }
-  //     else
-  //     {
-  //       Serial1.print("eprom data  ");
-  //       Serial1.println(eep_data_0);
-
-  //       Serial1.print("Door Status ");
-  //       Serial1.println(door_status);
-
-  //       Serial1.print("Drain Water tank status ");
-  //       Serial1.println(drain);
-
-  //       Serial1.print("distilled water tank status ");
-  //       Serial1.println(fresh);
-
-  //       EEPROM.write(0, 1); // eprom zero adderess 1 start cycle running
-  //     }
-  //     /*************
-  //      * Get Temp & Pressure to  skip pre heating cycle *******
-  //      * ********/
-
-  //     tmp4 = TS1(); // OUTER BODY
-  //     tmp3 = TS3(); // STEAM G
-
-  //     if (tmp3 > bypass_temp_SG || tmp4 > bypass_temp_RING)
-  //     {
-  //       process_status = 2;
-  //     }
-
-  //     else
-  //     {
-
-  //       process_status = 1;
-  //     }
-
-  //     /************************  IF RS = 1 start running cycle ******************************/
-  //     while (RS)
-  //     {
-
-  //       // Program going to start from here
-  //       PORTJ &= ~_BV(v2);
-  //       beep_2();
-
-  //       /*********** Run Main Program Cycle *****************************/
-  //       if (prgrm_sw)
-  //       {
-
-  //         switch (prgrm_sw)
-  //         {
-
-  //         case 1:
-  //           status_led_glow();
-  //           Serial1.println("unwrapped_cycle");
-  //           unwrapped_cycle();
-  //           break;
-
-  //         case 2:
-  //           status_led_glow();
-  //           Serial1.println("wrapped_cycle");
-  //           wrapped_cycle();
-  //           break;
-
-  //         case 3:
-  //           status_led_glow();
-  //           Serial1.println("prion_cycle");
-  //           prion_cycle();
-  //           break;
-
-  //         case 4:
-  //           status_led_glow();
-  //           Serial1.println("porous_cycle");
-  //           porous_cycle();
-  //           break;
-
-  //         case 5:
-  //           status_led_glow();
-  //           Serial1.println("all_prgm_cycle");
-  //           all_prgm_cycle();
-  //           break;
-
-  //         default:
-  //           Serial1.println("Done prgm................");
-
-  //           break;
-  //         }
-  //       }
-
-  //       /*********** Run Test  Program Cycle *****************************/
-  //       else if (test_sw)
-  //       {
-
-  //         switch (test_sw)
-  //         {
-  //         case 1:
-  //           status_led_glow();
-  //           Serial1.println("bnd_test_cycle");
-  //           bnd_test_cycle();
-  //           break;
-
-  //         case 2:
-  //           status_led_glow();
-  //           Serial1.println("vaccume_test_cycle");
-  //           vaccume_test_cycle();
-  //           break;
-
-  //         case 3:
-  //           status_led_glow();
-  //           Serial1.println("all_test_prgm_cycle");
-  //           all_test_prgm_cycle();
-  //           break;
-
-  //         default:
-  //           Serial1.println("Done test prgm................");
-  //           break;
-  //         }
-  //       }
-  //     }
+  //     print_code(0, 6);
+  //     RS = 0;
+  //     // beep_2();
   //   }
+  // find_error();
+  check_selected_program();
+  // check_water_tank();
 
-  //   delay(300);
+  Serial1.println("...........Please start  program..............");
+
+  if (RS)
+  {
+
+    delay(300);
+
+    // IF CONDITION activate only if drain water over flow or distel water empty or door open
+
+    eep_data_0 = EEPROM.read(0);
+    door_status = digitalRead(48);
+    if ((drain == 1) || (fresh == 1) || (door_status == 0)) //|| (door_status == 1)
+    {
+
+      beep_4();
+      if (!door_status)
+        Serial1.println("PLEASE CLOSE THE DOOR");
+      if (fresh)
+        Serial1.println("distilled water empty");
+      if (drain)
+        Serial1.println("drain water tank full");
+      RS = 0;
+    }
+    else
+    {
+      Serial1.print("eprom data  ");
+      Serial1.println(eep_data_0);
+
+      Serial1.print("Door Status ");
+      Serial1.println(door_status);
+
+      Serial1.print("Drain Water tank status ");
+      Serial1.println(drain);
+
+      Serial1.print("distilled water tank status ");
+      Serial1.println(fresh);
+
+      EEPROM.write(0, 1); // eprom zero adderess 1 start cycle running
+    }
+    /*************
+     * Get Temp & Pressure to  skip pre heating cycle *******
+     * ********/
+
+    tmp4 = TS1(); // OUTER BODY
+    tmp3 = TS3(); // STEAM G
+
+    if (tmp3 > bypass_temp_SG || tmp4 > bypass_temp_RING)
+    {
+      process_status = 2;
+    }
+
+    else
+    {
+
+      process_status = 1;
+    }
+
+    /************************  IF RS = 1 start running cycle ******************************/
+    while (RS)
+    {
+
+      // Program going to start from here
+      PORTJ &= ~_BV(v2);
+      beep_2();
+
+      /*********** Run Main Program Cycle *****************************/
+      if (prgrm_sw)
+      {
+
+        switch (prgrm_sw)
+        {
+
+        case 1:
+          status_led_glow();
+          Serial1.println("unwrapped_cycle");
+          unwrapped_cycle();
+          break;
+
+        case 2:
+          status_led_glow();
+          Serial1.println("wrapped_cycle");
+          wrapped_cycle();
+          break;
+
+        case 3:
+          status_led_glow();
+          Serial1.println("prion_cycle");
+          prion_cycle();
+          break;
+
+        case 4:
+          status_led_glow();
+          Serial1.println("porous_cycle");
+          porous_cycle();
+          break;
+
+        case 5:
+          status_led_glow();
+          Serial1.println("all_prgm_cycle");
+          all_prgm_cycle();
+          break;
+
+        default:
+          Serial1.println("Done prgm................");
+
+          break;
+        }
+      }
+
+      /*********** Run Test  Program Cycle *****************************/
+      else if (test_sw)
+      {
+
+        switch (test_sw)
+        {
+        case 1:
+          status_led_glow();
+          Serial1.println("bnd_test_cycle");
+          bnd_test_cycle();
+          break;
+
+        case 2:
+          status_led_glow();
+          Serial1.println("vaccume_test_cycle");
+          vaccume_test_cycle();
+          break;
+
+        case 3:
+          status_led_glow();
+          Serial1.println("all_test_prgm_cycle");
+          all_test_prgm_cycle();
+          break;
+
+        default:
+          Serial1.println("Done test prgm................");
+          break;
+        }
+      }
+    }
+  }
+
+  delay(300);
 }
 
 //*******************************  END Program ***********************************************************//
